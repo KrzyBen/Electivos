@@ -1,8 +1,8 @@
 "use strict";
 import { Router } from "express";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
-import isProfessor from "../middlewares/isProfessor.middleware.js";
-import isJefeCarrera from "../middlewares/isJefeCarrera.middleware.js";
+import { isProfessor } from "../middlewares/isProfessor.middleware.js";
+import { isJefeCarrera } from "../middlewares/isJefeCarrera.middleware.js";
 import {
   createElective,
   getElectives,
