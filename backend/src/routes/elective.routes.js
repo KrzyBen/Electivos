@@ -1,8 +1,8 @@
 "use strict";
 import { Router } from "express";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
-import { isProfessor } from "../middlewares/isProfessor.middleware.js";
-import { isJefeCarrera } from "../middlewares/isJefeCarrera.middleware.js";
+import { isProfessor } from "../middlewares/isProfessor.middleware.js";//para uso futuro
+import { isJefeCarrera } from "../middlewares/isJefeCarrera.middleware.js";//para uso futuro
 import {
   createElective,
   getElectives,
@@ -16,10 +16,10 @@ const router = Router();
 router.get("/", getElectives);
 router.get("/:id", getElectiveById);
 
-router.post("/", authenticateJwt, isProfessor, createElective);
+router.post("/", authenticateJwt,  createElective);
 
-router.patch("/:id/validate", authenticateJwt, isJefeCarrera, validateElective);
+router.patch("/:id/validate", authenticateJwt,  validateElective);
 
-router.get("/all/list", authenticateJwt, isJefeCarrera, getAllElectives);
+router.get("/all/list", authenticateJwt,  getAllElectives);
 
 export default router;
