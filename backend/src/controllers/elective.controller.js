@@ -61,7 +61,12 @@ export async function validateElective(req, res) {
 
     if (!id) return handleErrorClient(res, 400, "El id del electivo es requerido");
 
-    const [elective, errorElective] = await validateElectiveService(id);
+    const idNum = Number(id);
+    if (Number.isNaN(idNum) || !Number.isInteger(idNum)) {
+      return handleErrorClient(res, 400, "Id inválido", "El id del electivo debe ser un número entero válido");
+    }
+
+    const [elective, errorElective] = await validateElectiveService(idNum);
 
     if (errorElective) return handleErrorClient(res, 400, "Error validando electivo", errorElective);
 
@@ -77,7 +82,12 @@ export async function getElectiveById(req, res) {
 
     if (!id) return handleErrorClient(res, 400, "El id del electivo es requerido");
 
-    const [elective, errorElective] = await getElectiveByIdService(id);
+    const idNum = Number(id);
+    if (Number.isNaN(idNum) || !Number.isInteger(idNum)) {
+      return handleErrorClient(res, 400, "Id inválido", "El id del electivo debe ser un número entero válido");
+    }
+
+    const [elective, errorElective] = await getElectiveByIdService(idNum);
 
     if (errorElective) return handleErrorClient(res, 404, errorElective);
 
