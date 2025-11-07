@@ -58,6 +58,11 @@ const ElectiveSchema = new EntitySchema({
       nullable: false,
       cascade: false,
     },
+    registrationPeriods: {
+      type: "many-to-many",
+      target: "RegistrationPeriod",
+      mappedBy: "electives",
+    },
   },
 });
 
