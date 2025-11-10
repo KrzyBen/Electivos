@@ -13,7 +13,7 @@ export async function specialRegistrationService(studentId, electiveId, periodId
     const periodRepository = AppDataSource.getRepository(RegistrationPeriod);
 
     const student = await studentRepository.findOneBy({ id: studentId });
-    if (!student || student.rol !== 'usuario') return [null, "Estudiante no válido"];
+    if (!student || student.rol !== 'Alumno') return [null, "Estudiante no válido"];
 
     const elective = await electiveRepository.findOneBy({ id: electiveId });
     if (!elective) return [null, "Electivo no encontrado"];
@@ -22,9 +22,10 @@ export async function specialRegistrationService(studentId, electiveId, periodId
     if (!period) return [null, "Período no encontrado"];
 
     const existingRegistration = await registrationRepository.findOne({
-      where: { student: { id: studentId }, period: { id: periodId } }
+      where: {student: { id: studentId }, period: { id: periodId }, elective: { id: electiveId }}
     });
-    if (existingRegistration) return [null, "El estudiante ya está inscrito en un electivo para este período"];
+
+    if (existingRegistration) return [null, "El estudiante ya está inscrito en este electivo para este período"];
 
     const newRegistration = registrationRepository.create({
       student,
