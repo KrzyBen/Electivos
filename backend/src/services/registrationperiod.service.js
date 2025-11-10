@@ -34,26 +34,43 @@ export async function getActivePeriodService() {
 
 export async function addElectivesToPeriodService(periodId, electiveIds) {
   try {
-    const periodRepository = AppDataSource.getRepository(RegistrationPeriod);
-    const electiveRepository = AppDataSource.getRepository(Elective);
+    
+    const savedPeriod = await AppDataSource.transaction(async (transactionalEntityManager) => {
+      const periodRepository = transactionalEntityManager.getRepository(RegistrationPeriod);
+      const electiveRepository = transactionalEntityManager.getRepository(Elective);
 
-    const period = await periodRepository.findOneBy({ id: periodId });
-    if (!period) return [null, "Período de inscripción no encontrado"];
+      
+      const period = await periodRepository.findOneBy({ id: periodId });
+      if (!period) {
+        throw new Error("Período de inscripción no encontrado");
+      }
 
-    const electives = await electiveRepository.findBy({
-      id: In(electiveIds),
-      validado: true,
+      
+      const electives = await electiveRepository.findBy({
+        id: In(electiveIds),
+      });
+
+      
+      if (electives.length !== electiveIds.length) {
+        throw new Error("Uno o mas ID de electivos no son válidos o no existen");
+      }
+
+      
+      electives.forEach(elective => {
+        elective.validado = true;
+      });
+      await electiveRepository.save(electives);
+
+     
+      period.electives = electives;
+      
+     
+      return await periodRepository.save(period);
     });
-
-    if (electives.length !== electiveIds.length) {
-      return [null, "Uno o más electivos no son válidos, no existen o no han sido validados por un jefe de carrera"];
-    }
-
-    period.electives = electives;
-    const savedPeriod = await periodRepository.save(period);
 
     return [savedPeriod, null];
   } catch (error) {
-    return [null, "Error interno del servidor"];
+    
+    return [null, error.message || "Error interno del servidor"];
   }
 }
