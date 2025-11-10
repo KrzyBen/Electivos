@@ -9,17 +9,18 @@ import {
   validateElective,
   getElectiveById,
   getAllElectives,
+  updateElective,
 } from "../controllers/elective.controller.js";
 
 const router = Router();
 
-router.get("/", getElectives);
+router.get("/", authenticateJwt, getElectives);
 router.get("/:id", getElectiveById);
 
-router.post("/", authenticateJwt,  createElective);
+router.post("/", authenticateJwt, isProfessor, createElective);
+router.put("/:id", authenticateJwt, isProfessor, updateElective);
 
-router.patch("/:id/validate", authenticateJwt,  validateElective);
-
-router.get("/all/list", authenticateJwt,  getAllElectives);
+router.patch("/:id/validate", authenticateJwt, isJefeCarrera, validateElective);
+router.get("/all/list", authenticateJwt, isJefeCarrera, getAllElectives);
 
 export default router;
