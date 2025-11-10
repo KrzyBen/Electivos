@@ -5,8 +5,10 @@ import {
   validateElectiveService,
   getElectiveByIdService,
   getAllElectivesService,
+  getElectivesByProfesorService,
+  updateElectiveService,
 } from "../services/elective.service.js";
-import { electiveValidation } from "../validations/elective.validation.js";
+import { electiveValidation, electiveUpdateValidation } from "../validations/elective.validation.js";
 import {
   handleErrorClient,
   handleErrorServer,

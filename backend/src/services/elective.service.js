@@ -20,9 +20,13 @@ export async function createElectiveService(body, profesorUser) {
       validado: false,
     });
 
-    const saved = await electiveRepository.save(newElective);
+  const saved = await electiveRepository.save(newElective);
 
-    return [saved, null];
+  // Re-fetch the saved electivo including the profesor relation so the response
+  // includes profesor details (por ejemplo, su rut)
+  const savedWithProfesor = await electiveRepository.findOne({ where: { id: saved.id }, relations: ["profesor"] });
+
+  return [savedWithProfesor ? savedWithProfesor : saved, null];
   } catch (error) {
     console.error("Error al crear electivo:", error);
     return [null, "Error interno del servidor"];
