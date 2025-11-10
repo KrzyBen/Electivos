@@ -27,6 +27,11 @@ const UserSchema = new EntitySchema({
       nullable: false,
       unique: true,
     },
+    carrera: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
     rol: {
       type: "varchar",
       length: 50,
@@ -46,6 +51,15 @@ const UserSchema = new EntitySchema({
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: false,
+    },
+  },
+  relations: {
+    carreraEntidad: {
+      type: "many-to-one",
+      target: "Carrera",
+      joinColumn: { name: "carreraId" },
+      nullable: true,
+      cascade: false,
     },
   },
   indices: [

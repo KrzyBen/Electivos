@@ -14,6 +14,7 @@ export async function createElectiveService(body, profesorUser) {
       titulo: body.titulo,
       contenidos: body.contenidos,
       cupoMaximo: body.cupoMaximo,
+      cupoDisponible: body.cupoMaximo,
       horario: body.horario,
       requisitos: body.requisitos || null,
       profesor: profesorUser,

@@ -21,7 +21,7 @@ try {
 
     const rolUser = userFound.rol;
 
-    if (rolUser !== "administrador") {
+    if (rolUser !== "JefeCarrera") {
         return handleErrorClient(
             res,
             403,

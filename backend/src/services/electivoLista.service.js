@@ -35,7 +35,7 @@ export async function createElectivoListaService(userId, body) {
       return [null, "Este electivo ya está en tu lista."];
 
     // Validar cupo
-    if (electiveFound.cupoMaximo <= 0)
+    if (electiveFound.cupoDisponible <= 0)
       return [null, "No hay cupos disponibles para este electivo."];
 
     // Verificar conflictos de horario
@@ -90,7 +90,7 @@ export async function createElectivoListaService(userId, body) {
           // restaurar cupo del electivo reemplazado
           await electiveRepo.increment(
             { id: oldItem.electivo.id },
-            "cupoMaximo",
+            "cupoDisponible",
             1
           );
 
@@ -119,7 +119,7 @@ export async function createElectivoListaService(userId, body) {
         posicion: finalPosicion,
       });
 
-      await electiveRepo.decrement({ id: electiveFound.id }, "cupoMaximo", 1);
+      await electiveRepo.decrement({ id: electiveFound.id }, "cupoDisponible", 1);
 
       return savedItem;
     });
@@ -255,7 +255,7 @@ export async function removeElectivoListaService(id, userId) {
       await electiveRepoTx
         .createQueryBuilder()
         .update(Elective)
-        .set({ cupoMaximo: () => "cupoMaximo + 1" })
+        .set({ cupoDisponible: () => "cupoDisponible + 1" })
         .where("id = :electivoId", { electivoId: electivo.id })
         .execute();
     });
