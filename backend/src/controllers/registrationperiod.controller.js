@@ -3,8 +3,8 @@ import {
   createPeriodService, 
   getActivePeriodService, 
   addElectivesToPeriodService 
-} from "../services/registrationPeriod.service.js";
-import { periodValidation } from "../validations/registrationPeriod.validation.js";
+} from "../services/registrationperiod.service.js";
+import { periodValidation } from "../validations/registrationperiod.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
 export async function createPeriod(req, res) {

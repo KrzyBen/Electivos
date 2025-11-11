@@ -3,7 +3,7 @@ import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
 import electiveRoutes from "./elective.routes.js";
-import registrationPeriodRoutes from "./registrationPeriod.routes.js";
+import registrationPeriodRoutes from "./registrationperiod.routes.js";
 import registrationRoutes from "./registration.routes.js";
 import electiveListaRoutes from "./electivosLista.routes.js";
 

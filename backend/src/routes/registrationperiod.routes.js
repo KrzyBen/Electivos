@@ -6,7 +6,7 @@ import {
   createPeriod, 
   getActivePeriod, 
   addElectivesToPeriod 
-} from "../controllers/registrationPeriod.controller.js";
+} from "../controllers/registrationperiod.controller.js";
 
 const router = Router();
 
