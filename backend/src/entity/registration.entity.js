@@ -14,6 +14,12 @@ const RegistrationSchema = new EntitySchema({
       type: "boolean",
       default: false,
     },
+    // nueva columna para marcar si la inscripción está pendiente (solicitud)
+    pending: {
+      type: "boolean",
+      default: true,
+      nullable: false,
+    },
     registeredAt: {
       type: "timestamp with time zone",
       default: () => "CURRENT_TIMESTAMP",

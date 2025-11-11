@@ -22,17 +22,23 @@ const ElectiveSchema = new EntitySchema({
     cupoMaximo: {
       type: "int",
       nullable: false,
-      default: 45,
+      default: 40,
+    },
+    // todo: revisar para reemplazar cupodisponible por cupodisponible carrera
+    cupoDisponible: {
+      type: "int",
+      nullable: false,
+      default: 40,
     },
     cupoMaximoCarrera: {
       type: "int",
       nullable: false,
-      default: 0,
+      default: 10,
     },
     cupoDisponibleCarrera: {
       type: "int",
       nullable: false,
-      default: 0,
+      default: 10,
     },
     horario: {
       type: "varchar",
