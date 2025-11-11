@@ -29,6 +29,11 @@ export async function createElectivoListaService(userId, body) {
     });
     if (!electiveFound) return [null, "Electivo no encontrado"];
 
+    // Validar que el electivo esté aprobado/validado
+    if (!electiveFound.validado) {
+      return [null, "Este electivo aún no ha sido validado por la administración."];
+    }
+
     // Validar que el electivo pertenezca a la carrera del alumno
     const alumnoCarreraId = userFound.carreraEntidad.id;
     const carrerasElectivo = electiveFound.carrerasEntidad.map((c) => c.id);
