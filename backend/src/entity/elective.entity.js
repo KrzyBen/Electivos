@@ -22,7 +22,23 @@ const ElectiveSchema = new EntitySchema({
     cupoMaximo: {
       type: "int",
       nullable: false,
-      default: 45,
+      default: 40,
+    },
+    // todo: revisar para reemplazar cupodisponible por cupodisponible carrera
+    cupoDisponible: {
+      type: "int",
+      nullable: false,
+      default: 40,
+    },
+    cupoMaximoCarrera: {
+      type: "int",
+      nullable: false,
+      default: 10,
+    },
+    cupoDisponibleCarrera: {
+      type: "int",
+      nullable: false,
+      default: 10,
     },
     horario: {
       type: "varchar",
@@ -57,6 +73,11 @@ const ElectiveSchema = new EntitySchema({
       joinColumn: { name: "profesorId" },
       nullable: false,
       cascade: false,
+    },
+    carrerasEntidad: {
+      type: "many-to-many",
+      target: "Carrera",
+      joinTable: true,
     },
     registrationPeriods: {
       type: "many-to-many",
