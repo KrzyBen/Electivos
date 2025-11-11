@@ -5,7 +5,8 @@ import {
   listarElectivoListaService,
   updateElectivoListaService,
   removeElectivoListaService,
-  getElectivesValidadosService
+  getElectivesValidadosService,
+  replaceElectivoListaService,
 } from "../services/electivoLista.service.js";
 
 import {
@@ -146,5 +147,25 @@ export async function getElectivesValidados(req, res) {
   } catch (err) {
     console.error("Error en getElectivesValidados:", err);
     return handleErrorServer(res, 500, "Error al obtener los electivos validados");
+  }
+}
+
+
+/**
+ * Reemplazar un electivo en la lista del alumno
+ */
+
+export async function replaceElectivoLista(req, res) {
+  try {
+    const { oldElectivoId, newElectivoId } = req.body;
+    const userId = req.user?.id;
+
+    const [result, error] = await replaceElectivoListaService(userId, oldElectivoId, newElectivoId);
+    if (error) return handleErrorClient(res, 400, error);
+
+    return handleSuccess(res, 200, "Electivo reemplazado correctamente", result);
+  } catch (err) {
+    console.error("Error en replaceElectivoLista:", err);
+    return handleErrorServer(res, 500, "Error al reemplazar electivo");
   }
 }

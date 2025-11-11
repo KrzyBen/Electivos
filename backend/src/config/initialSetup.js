@@ -12,16 +12,20 @@ async function createUsers() {
     if (count > 0) return;
 
     // Ensure carreras exist
-    const carrerasDefault = ["IECI", "ICINF"];
+    const carrerasData = [
+      { nombre: "IECI", codigo: "22031" },
+      { nombre: "ICINF", codigo: "22032" },
+    ];
+
     const carreraMap = {};
-    // also keep id map to reference carreras by id when assigning relations
     const carreraIdMap = {};
-    for (const nombre of carrerasDefault) {
-      let c = await carreraRepository.findOneBy({ nombre });
-      if (!c) c = await carreraRepository.save(carreraRepository.create({ nombre }));
-      carreraMap[nombre] = c;
-      carreraIdMap[nombre] = c.id;
+    for (const c of carrerasData) {
+      let carrera = await carreraRepository.findOneBy({ codigo: c.codigo });
+      if (!carrera) carrera = await carreraRepository.save(carreraRepository.create(c));
+      carreraMap[c.nombre] = carrera;
+      carreraIdMap[c.nombre] = carrera.id;
     }
+
 
     // Create users and link carreraEntidad when applicable
     const usersToCreate = [
@@ -30,7 +34,7 @@ async function createUsers() {
         rut: "21.308.770-3",
         email: "JefeCarreraIECI@gmail.cl",
         password: await encryptPassword("admin1234"),
-        rol: "JefeCarrera",
+        rol: "administrador",
         carrera: "IECI",
       },
       {
@@ -38,7 +42,7 @@ async function createUsers() {
         rut: "22.111.222-1",
         email: "JefeCarreraICINF@gmail.cl",
         password: await encryptPassword("admin1234"),
-        rol: "JefeCarrera",
+        rol: "administrador",
         carrera: "ICINF",
       },
       {
