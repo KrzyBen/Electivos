@@ -7,6 +7,7 @@ import {
   removeElectivoListaService,
   getElectivesValidadosService,
   replaceElectivoListaService,
+  enviarListaService,
 } from "../services/electivoLista.service.js";
 
 import {
@@ -157,15 +158,40 @@ export async function getElectivesValidados(req, res) {
 
 export async function replaceElectivoLista(req, res) {
   try {
-    const { oldElectivoId, newElectivoId } = req.body;
     const userId = req.user?.id;
-
-    const [result, error] = await replaceElectivoListaService(userId, oldElectivoId, newElectivoId);
+    console.log("replaceElectivoLista controller called with userId:", userId, "body:", req.body);
+    const [result, error] = await replaceElectivoListaService(userId, req.body);
     if (error) return handleErrorClient(res, 400, error);
 
     return handleSuccess(res, 200, "Electivo reemplazado correctamente", result);
   } catch (err) {
     console.error("Error en replaceElectivoLista:", err);
     return handleErrorServer(res, 500, "Error al reemplazar electivo");
+  }
+}
+
+/**
+ * El Alumno envia su lista de electivos para validación
+ */
+
+export async function enviarElectivoLista(req, res) {
+  try {
+    const userId = req.user?.id;
+
+    const [resultado, serviceError] = await enviarListaService(userId);
+
+    if (serviceError) {
+      return handleErrorClient(res, 400, serviceError);
+    }
+
+    return handleSuccess(
+      res,
+      200,
+      "Lista enviada correctamente. Ya no puedes modificar tus electivos.",
+      resultado
+    );
+  } catch (err) {
+    console.error("Error en enviarElectivoLista:", err);
+    return handleErrorServer(res, 500, "Error al enviar la lista");
   }
 }

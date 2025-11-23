@@ -25,8 +25,6 @@ export async function checkPeriodoInscripcion(req, res, next) {
         "Actualmente no hay un período de inscripción activo."
       );
     }
-
-    // Si lo deseas, puedes adjuntar el periodo al request
     req.activePeriod = activePeriod;
     next();
   } catch (error) {

@@ -54,6 +54,8 @@ export async function createElectivoListaService(userId, body) {
     });
     if (alreadyExists)
       return [null, "Este electivo ya está en tu lista."];
+    
+    
 
     // Validar cupo
     if (electiveFound.cupoDisponible <= 0)
@@ -64,6 +66,15 @@ export async function createElectivoListaService(userId, body) {
       where: { alumno: { id: userId } },
       relations: ["electivo"],
     });
+
+    //  Verificar si la lista está enviada, no se permite agregar más
+    const listaEnviada = await electivoListaRepository.findOne({
+      where: { alumno: { id: userId }, estado: "enviado" }
+    });
+
+    if (listaEnviada) {
+      return [null, "Tu lista ya fue enviada. No puedes agregar más electivos."];
+    }
 
     const conflicting = currentElectives.find(
       (item) => item.electivo.horario === electiveFound.horario
@@ -98,6 +109,8 @@ export async function createElectivoListaService(userId, body) {
 
       // Calcular posición final
       let finalPosicion = posicion;
+
+      //si no se especifica posición, agregar al final
       if (!finalPosicion) {
         const max = await listaRepo
           .createQueryBuilder("el")
@@ -106,6 +119,23 @@ export async function createElectivoListaService(userId, body) {
           .getRawOne();
 
         finalPosicion = (max?.max ?? 0) + 1;
+      } else {
+        // Si la posición existe, se deben empujar los otros
+        const existsAtPosition = await listaRepo.findOne({
+          where: { alumno: { id: userId }, posicion: finalPosicion }
+        });
+
+        if (existsAtPosition) {
+          await listaRepo
+            .createQueryBuilder()
+            .update(ElectivoLista)
+            .set({ posicion: () => "posicion + 1" })
+            .where("alumno_id = :userId AND posicion >= :finalPos", {
+              userId,
+              finalPos: finalPosicion,
+            })
+            .execute();
+        }
       }
 
       // Agregar nuevo electivo
@@ -113,6 +143,7 @@ export async function createElectivoListaService(userId, body) {
         alumno: { id: Number(userId) },
         electivo: { id: Number(electivoId) },
         posicion: finalPosicion,
+        estado: "guardado",
       });
 
       // Descontar cupo
@@ -169,6 +200,10 @@ export async function updateElectivoListaService(userId, id, body) {
     });
 
     if (!itemFound) return [null, "Elemento de lista no encontrado"];
+
+    if (itemFound.estado !== "guardado") {
+      return [null, "No puedes modificar este electivo porque la lista ya fue enviada."];
+    }
 
     if (electivoId) {
       const electiveFound = await electiveRepository.findOne({
@@ -229,6 +264,10 @@ export async function removeElectivoListaService(id, userId) {
       .getOne();
 
     if (!itemFound) return [null, "Elemento de lista no encontrado"];
+
+    if (itemFound.estado !== "guardado") {
+      return [null, "No puedes eliminar electivos porque la lista ya fue enviada."];
+    }
 
     const oldPos = itemFound.posicion;
     const electivo = itemFound.electivo;
@@ -332,8 +371,6 @@ export async function replaceElectivoListaService(userId, body) {
     if (!userFound.carreraEntidad)
       return [null, "El usuario no tiene una carrera asignada"];
 
-    const alumnoCarreraId = userFound.carreraEntidad.id;
-
     // Buscar electivo nuevo con sus carreras
     const newElectivo = await electiveRepository.findOne({
       where: { id: newElectivoId },
@@ -341,16 +378,7 @@ export async function replaceElectivoListaService(userId, body) {
     });
     if (!newElectivo) return [null, "El nuevo electivo no existe"];
 
-    // Validar que el electivo nuevo pertenezca a la carrera del alumno
-    const carrerasElectivo = newElectivo.carrerasEntidad.map((c) => c.id);
-    if (!carrerasElectivo.includes(alumnoCarreraId)) {
-      return [
-        null,
-        `No puedes inscribirte en este electivo. No pertenece a tu carrera (${userFound.carreraEntidad.nombre}).`,
-      ];
-    }
-
-    // Buscar la lista del alumno con el electivo actual
+    // Buscar el item actual ANTES de usar currentItem en cualquier lógica
     const currentItem = await electivoListaRepository.findOne({
       where: {
         alumno: { id: Number(userId) },
@@ -365,32 +393,16 @@ export async function replaceElectivoListaService(userId, body) {
     if (oldElectivoId === newElectivoId)
       return [null, "No puedes reemplazar por el mismo electivo"];
 
-    // Validar cupo disponible
+    // Validar cupo
     if (newElectivo.cupoDisponible <= 0)
       return [null, "No hay cupos disponibles para el nuevo electivo."];
 
-    // Validar conflicto de horario
-    if (currentItem.electivo.horario === newElectivo.horario) {
-      return [
-        null,
-        {
-          message: "El nuevo electivo tiene el mismo horario que el anterior.",
-          conflicto: {
-            actual: {
-              id: currentItem.electivo.id,
-              titulo: currentItem.electivo.titulo,
-              horario: currentItem.electivo.horario,
-            },
-            nuevo: {
-              id: newElectivo.id,
-              titulo: newElectivo.titulo,
-              horario: newElectivo.horario,
-            },
-          },
-        },
-      ];
+    if (currentItem.estado !== "guardado") {
+      return [null, "No puedes cambiar electivos porque la lista ya fue enviada."];
     }
 
+
+    // Verificar otros conflictos
     const otherElectives = await electivoListaRepository.find({
       where: { alumno: { id: userId } },
       relations: ["electivo"],
@@ -406,38 +418,23 @@ export async function replaceElectivoListaService(userId, body) {
       return [
         null,
         {
-          message:
-            "Conflicto de horario detectado. No puedes inscribirte en este electivo.",
+          message: "Conflicto de horario detectado.",
           conflicto: {
-            actual: {
-              id: horarioConflict.electivo.id,
-              titulo: horarioConflict.electivo.titulo,
-              horario: horarioConflict.electivo.horario,
-            },
-            nuevo: {
-              id: newElectivo.id,
-              titulo: newElectivo.titulo,
-              horario: newElectivo.horario,
-            },
+            actual: horarioConflict.electivo,
+            nuevo: newElectivo,
           },
         },
       ];
     }
 
-    // Transacción: reemplazar electivo y ajustar cupos
+    // Transacción
     const replaced = await AppDataSource.transaction(async (manager) => {
       const listaRepo = manager.getRepository(ElectivoLista);
       const electiveRepo = manager.getRepository(Elective);
 
-      // Eliminar cupo del nuevo y devolver cupo del anterior
       await electiveRepo.decrement({ id: newElectivo.id }, "cupoDisponible", 1);
-      await electiveRepo.increment(
-        { id: currentItem.electivo.id },
-        "cupoDisponible",
-        1
-      );
+      await electiveRepo.increment({ id: currentItem.electivo.id }, "cupoDisponible", 1);
 
-      // Actualizar relación de electivo en la lista
       currentItem.electivo = newElectivo;
       return await listaRepo.save(currentItem);
     });
@@ -445,6 +442,86 @@ export async function replaceElectivoListaService(userId, body) {
     return [replaced, null];
   } catch (error) {
     console.error("Error en replaceElectivoListaService:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+// El alumno envía su lista de electivos
+export async function enviarListaService(userId) {
+  try {
+    const electivoListaRepository = AppDataSource.getRepository(ElectivoLista);
+
+    const items = await electivoListaRepository.find({
+      where: { alumno: { id: userId } }
+    });
+
+    if (!items.length)
+      return [null, "No tienes electivos en tu lista para enviar."];
+
+    // Si ya tiene enviados
+    const yaEnviado = items.some(item => item.estado === "enviado");
+    if (yaEnviado)
+      return [null, "La lista ya fue enviada previamente."];
+
+    await electivoListaRepository
+      .createQueryBuilder()
+      .update(ElectivoLista)
+      .set({ estado: "enviado" })
+      .where("alumno_id = :userId", { userId })
+      .execute();
+
+    return ["Lista enviada correctamente", null];
+  } catch (err) {
+    console.error("Error en enviarListaService:", err);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function enviarListasAutomaticamenteService() {
+  try {
+    const electivoListaRepository = AppDataSource.getRepository(ElectivoLista);
+
+    // Buscar todos los electivos con periodo terminado
+    const electivesRepository = AppDataSource.getRepository(Elective);
+    const now = new Date();
+
+    const periodosTerminados = await electivesRepository.find({
+      where: {
+        fechaFin: LessThan(now)
+      }
+    });
+
+    if (!periodosTerminados.length) {
+      return ["No hay periodos de inscripción terminados", null];
+    }
+
+    const electivoIds = periodosTerminados.map(e => e.id);
+
+    // Buscar listas que estén guardadas o pendientes
+    const listasPendientes = await electivoListaRepository.find({
+      where: {
+        electivo: { id: In(electivoIds) },
+        estado: In(["guardado", "pendiente"])
+      }
+    });
+
+    if (!listasPendientes.length) {
+      return ["No hay listas pendientes para enviar", null];
+    }
+
+    // Enviar las listas
+    await electivoListaRepository
+      .createQueryBuilder()
+      .update(ElectivoLista)
+      .set({ estado: "enviado" })
+      .where("estado IN (:...estados)", { estados: ["guardado", "pendiente"] })
+      .andWhere("electivo_id IN (:...electivos)", { electivos: electivoIds })
+      .execute();
+
+    return ["Listas enviadas automáticamente", null];
+
+  } catch (error) {
+    console.error("Error en envío automático:", error);
     return [null, "Error interno del servidor"];
   }
 }

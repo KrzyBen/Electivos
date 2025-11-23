@@ -10,6 +10,8 @@ import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+import cron from "node-cron";
+import { enviarListasAutomaticamenteService } from "./services/electivoLista.service.js";
 
 async function setupServer() {
   try {
@@ -74,6 +76,12 @@ async function setupAPI() {
     await connectDB();
     await setupServer();
     await createUsers();
+    cron.schedule("0 8 * * *", () => {
+      console.log("=> Ejecutando envío automático de listas...");
+      enviarListasAutomaticamenteService()
+        .then(() => console.log("=> Envío automático completado"))
+        .catch(err => console.error("=> Error en envío automático:", err));
+    });
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);
   }

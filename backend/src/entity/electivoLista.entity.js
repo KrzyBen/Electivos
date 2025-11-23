@@ -15,6 +15,12 @@ const ElectivoListaSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    estado:{
+      type: "varchar",
+      length: 50,
+      nullable: false,
+      default: "pendiente",
+    },
     createdAt: {
       type: "timestamp with time zone",
       default: () => "CURRENT_TIMESTAMP",

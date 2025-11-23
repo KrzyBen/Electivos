@@ -9,6 +9,7 @@ import {
   removeElectivoLista,
   getElectivesValidados,
   replaceElectivoLista,
+  enviarElectivoLista,
 } from "../controllers/electivoLista.controller.js";
 
 // Middlewares
@@ -27,6 +28,7 @@ router.patch("/:id/update", authenticateJwt, isAlumno, checkPeriodoInscripcion,u
 router.delete("/:id/delete", authenticateJwt, isAlumno, checkPeriodoInscripcion,removeElectivoLista);
 router.get("/validados", authenticateJwt, isAlumno, getElectivesValidados);
 router.post("/replace", authenticateJwt, isAlumno, checkPeriodoInscripcion,replaceElectivoLista);
+router.post("/enviar", authenticateJwt, isAlumno, checkPeriodoInscripcion, enviarElectivoLista);
 
 
 export default router;
