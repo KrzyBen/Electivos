@@ -74,6 +74,18 @@ const Navbar = () => {
                     )}
                     <li>
                         <NavLink 
+                            to="/electives" 
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
+                        >
+                            Electivos
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink 
                             to="/auth" 
                             onClick={() => { 
                                 logoutSubmit(); 
