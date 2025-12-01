@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { getElectives } from "../services/elective.service";
-import Table from "../components/Table";
+import ReactPaginate from "react-paginate";
+import "../styles/electives.css";
 import { Link } from "react-router-dom";
 
 const Electives = () => {
   const [electives, setElectives] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 6;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -27,24 +30,42 @@ const Electives = () => {
   const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
   const userRole = user?.rol;
 
+  // Paginación
+  const pageCount = Math.ceil(electives.length / itemsPerPage);
+  const displayedElectives = electives.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
   return (
     <div className="electives-page">
       <h2>Listado de Electivos</h2>
       {userRole === 'profesor' && (
         <Link to="/electives/new" className="btn">Agregar Electivo</Link>
       )}
-      <Table
-        data={electives}
-        columns={[
-          { title: "Título", field: "titulo" },
-          { title: "Contenidos", field: "contenidos" },
-          { title: "Cupo Máximo", field: "cupoMaximo" },
-          { title: "Horario", field: "horario" },
-        ]}
-        actions={row => [
-          <Link key="edit" to={`/electives/${row.id}/edit`} className="btn">Editar</Link>,
-          <Link key="view" to={`/electives/${row.id}`} className="btn">Ver</Link>
-        ]}
+      <div className="electives-grid">
+        {displayedElectives.map(electivo => (
+          <div key={electivo.id} className="elective-card">
+            <h3>{electivo.titulo}</h3>
+            <p><strong>Contenidos:</strong> {electivo.contenidos}</p>
+            <p><strong>Cupo Máximo:</strong> {electivo.cupoMaximo}</p>
+            <p><strong>Horario:</strong> {electivo.horario}</p>
+            <div className="card-actions">
+              {userRole === 'profesor' && (
+                <Link to={`/electives/${electivo.id}/edit`} className="btn">Editar</Link>
+              )}
+              <Link to={`/electives/${electivo.id}`} className="btn">Ver</Link>
+            </div>
+          </div>
+        ))}
+      </div>
+      <ReactPaginate
+        previousLabel={"Anterior"}
+        nextLabel={"Siguiente"}
+        breakLabel={"..."}
+        pageCount={pageCount}
+        marginPagesDisplayed={1}
+        pageRangeDisplayed={2}
+        onPageChange={({ selected }) => setCurrentPage(selected)}
+        containerClassName={"pagination"}
+        activeClassName={"active"}
       />
     </div>
   );

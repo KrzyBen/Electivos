@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "../styles/electiveForm.css";
 import { createElective, updateElective, getElectiveById } from "../services/elective.service";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -29,7 +30,8 @@ const ElectiveForm = ({ isEdit = false }) => {
       setLoading(true);
       getElectiveById(id)
         .then(data => {
-          setForm({ ...defaultValues, ...data });
+          const electivo = data.data || data;
+          setForm({ ...defaultValues, ...electivo });
           setLoading(false);
         })
         .catch(() => {
@@ -65,6 +67,9 @@ const ElectiveForm = ({ isEdit = false }) => {
     }
   };
 
+  if (loading) {
+    return <div className="elective-form"><h2>Cargando electivo...</h2></div>;
+  }
   return (
     <form className="elective-form" onSubmit={handleSubmit}>
       <h2>{isEdit ? "Editar Electivo" : "Agregar Electivo"}</h2>
@@ -88,7 +93,12 @@ const ElectiveForm = ({ isEdit = false }) => {
         <input name="validado" type="checkbox" checked={form.validado} onChange={handleChange} />
       </label>
       {/* Aquí podrías agregar selects para profesor, carrerasEntidad y registrationPeriods si tienes los datos */}
-      <button type="submit" disabled={loading}>{loading ? "Guardando..." : "Guardar"}</button>
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+        <button type="submit" disabled={loading}>{loading ? "Guardando..." : "Guardar"}</button>
+        {isEdit && (
+          <button type="button" className="cancel-btn" onClick={() => navigate('/electives')}>Cancelar</button>
+        )}
+      </div>
     </form>
   );
 };
