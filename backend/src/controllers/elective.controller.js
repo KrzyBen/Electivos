@@ -1,11 +1,11 @@
 "use strict";
+
 import {
   createElectiveService,
   getAvailableElectivesService,
   validateElectiveService,
   getElectiveByIdService,
   getAllElectivesService,
-  getElectivesByProfesorService,
   updateElectiveService,
 } from "../services/elective.service.js";
 import { electiveValidation, electiveUpdateValidation } from "../validations/elective.validation.js";
@@ -129,3 +129,4 @@ export async function getElectiveById(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
+

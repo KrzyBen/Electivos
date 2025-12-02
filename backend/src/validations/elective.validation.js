@@ -18,8 +18,8 @@ export const electiveValidation = Joi.object({
     "number.max": "El cupo máximo permitido es 45.",
     "any.required": "El cupo es obligatorio.",
   }),
-  horario: Joi.string().min(5).max(255).required().messages({
-    "string.empty": "El horario no puede estar vacío.",
+  horario: Joi.date().required().messages({
+    "date.base": "El horario debe ser una fecha válida.",
     "any.required": "El horario es obligatorio.",
   }),
   requisitos: Joi.string().allow(null, "").max(2000).messages({

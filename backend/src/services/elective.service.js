@@ -22,8 +22,6 @@ export async function createElectiveService(body, profesorUser) {
 
   const saved = await electiveRepository.save(newElective);
 
-  // Re-fetch the saved electivo including the profesor relation so the response
-  // includes profesor details (por ejemplo, su rut)
   const savedWithProfesor = await electiveRepository.findOne({ where: { id: saved.id }, relations: ["profesor"] });
 
   return [savedWithProfesor ? savedWithProfesor : saved, null];
