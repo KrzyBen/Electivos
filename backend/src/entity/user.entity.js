@@ -27,11 +27,6 @@ const UserSchema = new EntitySchema({
       nullable: false,
       unique: true,
     },
-    carrera: {
-      type: "varchar",
-      length: 255,
-      nullable: true,
-    },
     rol: {
       type: "varchar",
       length: 50,

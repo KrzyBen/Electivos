@@ -1,33 +1,32 @@
 "use strict";
 import User from "../entity/user.entity.js";
+import Carrera from "../entity/carrera.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
 async function createUsers() {
   try {
     const userRepository = AppDataSource.getRepository(User);
-    const carreraRepository = AppDataSource.getRepository("Carrera");
+    const carreraRepository = AppDataSource.getRepository(Carrera);
 
     const count = await userRepository.count();
     if (count > 0) return;
 
-    // Ensure carreras exist
+    // Crear carreras si no existen
     const carrerasData = [
       { nombre: "IECI", codigo: "22031" },
       { nombre: "ICINF", codigo: "22032" },
     ];
 
-    const carreraMap = {};
     const carreraIdMap = {};
+
     for (const c of carrerasData) {
       let carrera = await carreraRepository.findOneBy({ codigo: c.codigo });
       if (!carrera) carrera = await carreraRepository.save(carreraRepository.create(c));
-      carreraMap[c.nombre] = carrera;
       carreraIdMap[c.nombre] = carrera.id;
     }
 
-
-    // Create users and link carreraEntidad when applicable
+    // Crear usuarios con relación carreraEntidad
     const usersToCreate = [
       {
         nombreCompleto: "Jefe Carrera IECI",
@@ -35,7 +34,7 @@ async function createUsers() {
         email: "JefeCarreraIECI@gmail.cl",
         password: await encryptPassword("admin1234"),
         rol: "administrador",
-        carrera: "IECI",
+        carreraEntidad: { id: carreraIdMap["IECI"] },
       },
       {
         nombreCompleto: "Jefe Carrera ICINF",
@@ -43,7 +42,7 @@ async function createUsers() {
         email: "JefeCarreraICINF@gmail.cl",
         password: await encryptPassword("admin1234"),
         rol: "administrador",
-        carrera: "ICINF",
+        carreraEntidad: { id: carreraIdMap["ICINF"] },
       },
       {
         nombreCompleto: "Profesor Uno",
@@ -58,7 +57,7 @@ async function createUsers() {
         email: "alumno1.2024@gmail.cl",
         password: await encryptPassword("user1234"),
         rol: "Alumno",
-        carrera: "IECI",
+        carreraEntidad: { id: carreraIdMap["IECI"] },
       },
       {
         nombreCompleto: "Alumno Dos",
@@ -66,7 +65,7 @@ async function createUsers() {
         email: "alumno2.2024@gmail.cl",
         password: await encryptPassword("user1234"),
         rol: "Alumno",
-        carrera: "ICINF",
+        carreraEntidad: { id: carreraIdMap["ICINF"] },
       },
       {
         nombreCompleto: "Alumno Tres",
@@ -74,7 +73,7 @@ async function createUsers() {
         email: "alumno3.2024@gmail.cl",
         password: await encryptPassword("user1234"),
         rol: "Alumno",
-        carrera: "IECI",
+        carreraEntidad: { id: carreraIdMap["IECI"] },
       },
       {
         nombreCompleto: "Alumno Cuatro",
@@ -82,23 +81,14 @@ async function createUsers() {
         email: "alumno4.2024@gmail.cl",
         password: await encryptPassword("user1234"),
         rol: "Alumno",
-        carrera: "ICINF",
+        carreraEntidad: { id: carreraIdMap["ICINF"] },
       },
     ];
 
-    const creations = [];
     for (const u of usersToCreate) {
-      // avoid keeping the temporary 'carrera' name on the user columns
-      const { carrera: carreraNombre, ...userCols } = u;
-      const user = userRepository.create(userCols);
-      if (carreraNombre) {
-        // set relation by id to avoid issues resolving the entity instance
-        // TypeORM accepts an object with the related id for relations defined via EntitySchema
-        user.carreraEntidad = { id: carreraIdMap[carreraNombre] };
-      }
-      creations.push(userRepository.save(user));
+      await userRepository.save(userRepository.create(u));
     }
-    await Promise.all(creations);
+
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {
     console.error("Error al crear usuarios:", error);
