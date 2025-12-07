@@ -36,9 +36,10 @@ export async function createElectivoListaService(userId, body) {
 
     // Validar que el electivo pertenezca a la carrera del alumno
     const alumnoCarreraId = userFound.carreraEntidad.id;
-    const carrerasElectivo = electiveFound.carrerasEntidad.map((c) => c.id);
+    const carrerasElectivoIds = electiveFound.carrerasEntidad.map(c => c.id);
+    const pertenece = carrerasElectivoIds.includes(alumnoCarreraId);
 
-    if (!carrerasElectivo.includes(alumnoCarreraId)) {
+    if (!pertenece) {
       return [
         null,
         `No puedes inscribirte en este electivo. No pertenece a tu carrera (${userFound.carreraEntidad.nombre}).`,
@@ -166,7 +167,6 @@ export async function createElectivoListaService(userId, body) {
 export async function listarElectivoListaService(userId, query = {}) {
   try {
     const { page = 1, limit = 50 } = query;
-
     const electivoListaRepository = AppDataSource.getRepository(ElectivoLista);
 
     const [items, total] = await electivoListaRepository.findAndCount({
@@ -177,10 +177,7 @@ export async function listarElectivoListaService(userId, query = {}) {
       take: limit,
     });
 
-    if (items.length === 0)
-      return [null, "El alumno no tiene electivos en su lista"];
-
-    return [{ items, total, page, limit }, null];
+    return [{ items: items || [], total: total || 0, page, limit }, null];
   } catch (error) {
     console.error("Error al obtener lista de electivos del alumno:", error);
     return [null, "Error interno del servidor"];
@@ -319,7 +316,6 @@ export async function getElectivesValidadosService(userId) {
     const userRepository = AppDataSource.getRepository("User");
     const electiveRepository = AppDataSource.getRepository("Elective");
 
-    // Traer al usuario con su carreraEntidad
     const userFound = await userRepository.findOne({
       where: { id: userId },
       relations: ["carreraEntidad"],
@@ -328,24 +324,20 @@ export async function getElectivesValidadosService(userId) {
     if (!userFound)
       return [null, "Usuario no encontrado"];
 
-    const userCarrera = userFound.carreraEntidad;
-
-    // Si el usuario no tiene carrera asignada
-    if (!userCarrera)
+    if (!userFound.carreraEntidad)
       return [null, "El usuario no tiene una carrera asociada"];
 
-    // Buscar electivos validados y que correspondan a la carrera del usuario
+    const carreraId = userFound.carreraEntidad.id;
     const electives = await electiveRepository
       .createQueryBuilder("elective")
       .leftJoinAndSelect("elective.profesor", "profesor")
+      .innerJoin("elective.carrerasEntidad", "carreraFiltro", "carreraFiltro.id = :carreraId", { carreraId })
       .leftJoinAndSelect("elective.carrerasEntidad", "carrera")
-      .where("elective.validado = :validado", { validado: true })
-      .andWhere("carrera.id = :carreraId", { carreraId: userCarrera.id })
+
+      .where("elective.validado = true")
+
       .orderBy("elective.titulo", "ASC")
       .getMany();
-
-    if (!electives.length)
-      return [null, "No hay electivos validados disponibles para tu carrera"];
 
     return [electives, null];
   } catch (error) {
@@ -451,18 +443,29 @@ export async function enviarListaService(userId) {
   try {
     const electivoListaRepository = AppDataSource.getRepository(ElectivoLista);
 
+    // Obtener items del usuario
     const items = await electivoListaRepository.find({
-      where: { alumno: { id: userId } }
+      where: { alumno: { id: userId } },
+      order: { posicion: "ASC" }
     });
 
     if (!items.length)
       return [null, "No tienes electivos en tu lista para enviar."];
 
-    // Si ya tiene enviados
+    // Validar si ya fue enviado
     const yaEnviado = items.some(item => item.estado === "enviado");
     if (yaEnviado)
       return [null, "La lista ya fue enviada previamente."];
 
+    // ---- REORDENAR POSICIONES ----
+    const reorderedItems = items.map((item, index) => ({
+      ...item,
+      posicion: index + 1
+    }));
+
+    await electivoListaRepository.save(reorderedItems);
+
+    // ---- MARCAR COMO ENVIADOS ----
     await electivoListaRepository
       .createQueryBuilder()
       .update(ElectivoLista)
@@ -471,6 +474,7 @@ export async function enviarListaService(userId) {
       .execute();
 
     return ["Lista enviada correctamente", null];
+
   } catch (err) {
     console.error("Error en enviarListaService:", err);
     return [null, "Error interno del servidor"];

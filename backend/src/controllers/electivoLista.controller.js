@@ -141,10 +141,17 @@ export async function removeElectivoLista(req, res) {
  */
 export async function getElectivesValidados(req, res) {
   try {
-    const [electives, error] = await getElectivesValidadosService();
+    const userId = req.user.id;
+
+    const [electives, error] = await getElectivesValidadosService(userId);
     if (error) return handleErrorClient(res, 404, error);
 
-    return handleSuccess(res, 200, "Electivos validados obtenidos correctamente", electives);
+    return handleSuccess(
+      res,
+      200,
+      "Electivos validados obtenidos correctamente",
+      electives
+    );
   } catch (err) {
     console.error("Error en getElectivesValidados:", err);
     return handleErrorServer(res, 500, "Error al obtener los electivos validados");
@@ -159,7 +166,6 @@ export async function getElectivesValidados(req, res) {
 export async function replaceElectivoLista(req, res) {
   try {
     const userId = req.user?.id;
-    console.log("replaceElectivoLista controller called with userId:", userId, "body:", req.body);
     const [result, error] = await replaceElectivoListaService(userId, req.body);
     if (error) return handleErrorClient(res, 400, error);
 
