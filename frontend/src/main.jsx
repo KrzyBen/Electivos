@@ -11,7 +11,6 @@ import '@styles/styles.css';
 
 //Importado de las paginas de alumno
 import MisElectivos from '@pages/MisElectivos';
-import EnviarLista from '@pages/EnviarLista';
 
 const router = createBrowserRouter([
   {
@@ -38,15 +37,7 @@ const router = createBrowserRouter([
             <MisElectivos />
           </ProtectedRoute>
           )
-        },
-        {
-          path: "/enviar-lista",
-          element: (
-          <ProtectedRoute allowedRoles={["Alumno"]}>
-            <EnviarLista />
-          </ProtectedRoute>
-        )
-      }
+        }
     ]
   },
   {

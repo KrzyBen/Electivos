@@ -86,18 +86,6 @@ const Navbar = () => {
                         Mis Electivos
                     </NavLink>
                     </li>
-                    <li>
-                    <NavLink
-                        to="/enviar-lista"
-                        onClick={() => { 
-                        setMenuOpen(false);
-                        addActiveClass();
-                        }}
-                        activeClassName="active"
-                    >
-                        Enviar Lista
-                    </NavLink>
-                    </li>
                     </>
                     )}
 

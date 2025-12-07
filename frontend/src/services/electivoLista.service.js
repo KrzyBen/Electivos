@@ -2,26 +2,30 @@ import axios from './root.service.js';
 
 export async function getElectivosValidados() {
   try {
-    const { data } = await axios.get('/electivo_Alumno/validos');
-    return data.data;
+    const { data } = await axios.get("/electivo_Alumno/validados");
+    return data;
   } catch (error) {
-    return error.response?.data;
+    return error.response?.data || { status: "Client error", details: "Error desconocido" };
   }
 }
 
 export async function getMisElectivos() {
   try {
-    const { data } = await axios.get('/electivo_Alumno/listar');
+    const { data } = await axios.get("/electivo_Alumno/lista");
     return data.data;
-  } catch (error) {
-    return error.response?.data;
+  } catch (err) {
+    if (err?.response?.status === 404) {
+      return { items: [] };
+    }
+    throw err;
   }
 }
 
 export async function addElectivo(body) {
   try {
+    console.log('Adding electivo with body:', body);
     const { data } = await axios.post('/electivo_Alumno/create', body);
-    return data.data;
+    return data;
   } catch (error) {
     return error.response?.data;
   }
@@ -29,7 +33,8 @@ export async function addElectivo(body) {
 
 export async function replaceElectivo(body) {
   try {
-    const { data } = await axios.put('/electivo_Alumno/replace', body);
+    console.log('Replacing electivo with body:', body);
+    const { data } = await axios.post('/electivo_Alumno/replace', body);
     return data.data;
   } catch (error) {
     return error.response?.data;
@@ -38,8 +43,17 @@ export async function replaceElectivo(body) {
 
 export async function deleteElectivo(electivoId) {
   try {
-    const { data } = await axios.delete(`/electivo_Alumno/remove/${electivoId}`);
+    const { data } = await axios.delete(`/electivo_Alumno/${electivoId}/delete`);
     return data.data;
+  } catch (error) {
+    return error.response?.data;
+  }
+}
+
+export async function updateElectivo(id, body) {
+  try {
+    const { data } = await axios.patch(`/electivo_Alumno/${id}/update`, body);
+    return data;
   } catch (error) {
     return error.response?.data;
   }
