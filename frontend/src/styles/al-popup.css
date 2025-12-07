@@ -1,0 +1,126 @@
+/* Fondo oscuro */
+.al-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+/* Caja del popup */
+.al-popup-box {
+    width: 480px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px 28px;
+    position: relative;
+    animation: popupFadeIn .25s ease;
+}
+
+/* Animación suave */
+@keyframes popupFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Cerrar */
+.al-popup-close {
+    position: absolute;
+    right: 14px;
+    top: 12px;
+    font-size: 22px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #666;
+}
+
+/* Título */
+.al-popup-title {
+    margin-bottom: 20px;
+    color: #003366;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Formulario */
+.al-popup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.al-popup-label {
+    font-weight: bold;
+    color: #003366;
+}
+
+.al-popup-input {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* Botones */
+.al-popup-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.al-btn-confirm {
+    background: #003366;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.al-btn-cancel {
+    background: #aaa;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.al-btn-confirm:hover {
+    background: #00274d;
+}
+
+.al-btn-cancel:hover {
+    background: #888;
+}
+
+.al-electivos-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.al-electivo-card {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  background: #fafafa;
+}
+
+.al-electivo-card:hover {
+  background: #f0f0f0;
+}
+
+.al-electivo-card.selected {
+  border-color: #3874ff;
+  background: #e8f0ff;
+}

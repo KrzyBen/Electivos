@@ -48,6 +48,15 @@ const UserSchema = new EntitySchema({
       nullable: false,
     },
   },
+  relations: {
+    carreraEntidad: {
+      type: "many-to-one",
+      target: "Carrera",
+      joinColumn: { name: "carreraId" },
+      nullable: true,
+      cascade: false,
+    },
+  },
   indices: [
     {
       name: "IDX_USER",

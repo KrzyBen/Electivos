@@ -1,0 +1,60 @@
+.al-main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.al-table-container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.al-top-table {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.al-title-table {
+    color: #003366;
+    margin-left: 70px;
+}
+
+.al-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.al-btn-replace {
+    border-radius: 10px;
+    padding: 8px 12px;
+    border: none;
+    font-weight: bold;
+    background-color: #003366;
+    color: white;
+}
+
+.al-btn-replace:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+    .al-title-table {
+        margin: 0;
+    }
+    .al-top-table {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .al-table-container {
+        width: 352px;
+        height: 500px;
+        margin: 0;
+    }
+}

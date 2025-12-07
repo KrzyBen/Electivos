@@ -9,6 +9,9 @@ import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
+//Importado de las paginas de alumno
+import MisElectivos from '@pages/MisElectivos';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -26,7 +29,15 @@ const router = createBrowserRouter([
           <Users />
         </ProtectedRoute>
         ),
-    }
+      },
+      {
+        path: "/mis-electivos",
+        element: (
+          <ProtectedRoute allowedRoles={["Alumno"]}>
+            <MisElectivos />
+          </ProtectedRoute>
+          )
+        }
     ]
   },
   {
