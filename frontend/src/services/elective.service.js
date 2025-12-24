@@ -27,5 +27,3 @@ export const updateElective = async (id, data) => {
   const response = await axios.put(`${API_URL}/${id}`, data, getAuthConfig());
   return response.data;
 };
-
-

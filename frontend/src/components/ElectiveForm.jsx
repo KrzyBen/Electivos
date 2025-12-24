@@ -7,15 +7,8 @@ const defaultValues = {
   titulo: "",
   contenidos: "",
   cupoMaximo: 40,
-  cupoDisponible: 40,
-  cupoMaximoCarrera: 10,
-  cupoDisponibleCarrera: 10,
   horario: "",
-  requisitos: "",
-  validado: false,
-  profesor: "",
-  carrerasEntidad: [],
-  registrationPeriods: []
+  requisitos: ""
 };
 
 const ElectiveForm = ({ isEdit = false }) => {
@@ -54,18 +47,32 @@ const ElectiveForm = ({ isEdit = false }) => {
     setLoading(true);
     setError(null);
     try {
+      const formToSend = {
+        titulo: form.titulo,
+        contenidos: form.contenidos,
+        cupoMaximo: Number(form.cupoMaximo),
+        horario: new Date(form.horario),
+        requisitos: form.requisitos
+      };
       if (isEdit) {
-        await updateElective(id, form);
+        await updateElective(id, formToSend);
       } else {
-        await createElective(form);
+        await createElective(formToSend);
       }
       navigate("/electives");
     } catch (err) {
-      setError("Error al guardar electivo");
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else if (err.response && err.response.data) {
+        setError(JSON.stringify(err.response.data));
+      } else {
+        setError("Error al guardar electivo");
+      }
     } finally {
       setLoading(false);
     }
   };
+
 
   if (loading) {
     return <div className="elective-form"><h2>Cargando electivo...</h2></div>;
@@ -84,15 +91,17 @@ const ElectiveForm = ({ isEdit = false }) => {
         <input name="cupoMaximo" type="number" value={form.cupoMaximo} onChange={handleChange} required />
       </label>
       <label>Horario
-        <input name="horario" value={form.horario} onChange={handleChange} required />
+        <input
+          name="horario"
+          type="datetime-local"
+          value={form.horario}
+          onChange={handleChange}
+          required
+        />
       </label>
       <label>Requisitos
         <input name="requisitos" value={form.requisitos} onChange={handleChange} />
       </label>
-      <label>Validado
-        <input name="validado" type="checkbox" checked={form.validado} onChange={handleChange} />
-      </label>
-      {/* Aquí podrías agregar selects para profesor, carrerasEntidad y registrationPeriods si tienes los datos */}
       <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
         <button type="submit" disabled={loading}>{loading ? "Guardando..." : "Guardar"}</button>
         {isEdit && (

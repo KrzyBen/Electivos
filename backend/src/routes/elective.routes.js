@@ -16,12 +16,10 @@ const router = Router();
 
 router.get("/", authenticateJwt, getElectives);
 router.get("/:id", getElectiveById);
-router.put("/edit/:id", authenticateJwt, updateElective, isProfessor );
-router.post("/", authenticateJwt,  createElective, isProfessor );
+router.put("/edit/:id", authenticateJwt, isProfessor, updateElective);
+router.post("/", authenticateJwt, isProfessor, createElective);
 
-router.post("/", authenticateJwt,  createElective);
-
-router.patch("/:id/validate", authenticateJwt,  validateElective, isJefeCarrera);
+router.patch("/:id/validate", authenticateJwt, isJefeCarrera, validateElective);
 
 router.get("/all/list", authenticateJwt,  getAllElectives);
 

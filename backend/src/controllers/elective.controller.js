@@ -129,4 +129,3 @@ export async function getElectiveById(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
-

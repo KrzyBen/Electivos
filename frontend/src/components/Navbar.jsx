@@ -53,7 +53,7 @@ const Navbar = () => {
                                 setMenuOpen(false); 
                                 addActiveClass();
                             }} 
-                            activeClassName="active"
+                            className={({ isActive }) => isActive ? "active" : undefined}
                         >
                             Inicio
                         </NavLink>
@@ -66,7 +66,7 @@ const Navbar = () => {
                                 setMenuOpen(false); 
                                 addActiveClass();
                             }} 
-                            activeClassName="active"
+                            className={({ isActive }) => isActive ? "active" : undefined}
                         >
                             Usuarios
                         </NavLink>
@@ -79,7 +79,7 @@ const Navbar = () => {
                                 setMenuOpen(false); 
                                 addActiveClass();
                             }} 
-                            activeClassName="active"
+                            className={({ isActive }) => isActive ? "active" : undefined}
                         >
                             Electivos
                         </NavLink>
@@ -91,7 +91,7 @@ const Navbar = () => {
                                 logoutSubmit(); 
                                 setMenuOpen(false); 
                             }} 
-                            activeClassName="active"
+                            className={({ isActive }) => isActive ? "active" : undefined}
                         >
                             Cerrar sesión
                         </NavLink>

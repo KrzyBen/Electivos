@@ -1,5 +1,3 @@
-// Validación para actualización de electivo (PUT)
-
 "use strict";
 import Joi from "joi";
 
@@ -19,8 +17,8 @@ export const electiveValidation = Joi.object({
     "any.required": "El cupo es obligatorio.",
   }),
   horario: Joi.date().required().messages({
-    "date.base": "El horario debe ser una fecha válida.",
-    "any.required": "El horario es obligatorio.",
+    "date.base": "El horario debe ser una fecha válida",
+    "any.required": "El horario es obligatorio",
   }),
   requisitos: Joi.string().allow(null, "").max(2000).messages({
     "string.max": "Los requisitos pueden tener hasta 2000 caracteres.",

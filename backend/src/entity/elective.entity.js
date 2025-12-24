@@ -25,8 +25,7 @@ const ElectiveSchema = new EntitySchema({
       default: 45,
     },
     horario: {
-      type: "varchar",
-      length: 255,
+      type: "timestamp with time zone",
       nullable: false,
     },
     requisitos: {
