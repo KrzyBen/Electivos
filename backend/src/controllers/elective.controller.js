@@ -3,12 +3,18 @@
 import {
   createElectiveService,
   getAvailableElectivesService,
+  getElectivesByProfesorService,
   validateElectiveService,
   getElectiveByIdService,
   getAllElectivesService,
   updateElectiveService,
 } from "../services/elective.service.js";
-import { electiveValidation, electiveUpdateValidation } from "../validations/elective.validation.js";
+
+import {
+  electiveValidation,
+  electiveUpdateValidation,
+} from "../validations/elective.validation.js";
+
 import {
   handleErrorClient,
   handleErrorServer,
@@ -20,12 +26,16 @@ export async function createElective(req, res) {
     const { body } = req;
 
     const { error } = electiveValidation.validate(body);
+    if (error) {
+      return handleErrorClient(res, 400, "Error de validación", error.message);
+    }
 
-    if (error) return handleErrorClient(res, 400, "Error de validación", error.message);
+    const [elective, electiveError] =
+      await createElectiveService(body, req.user);
 
-    const [elective, electiveError] = await createElectiveService(body, req.user);
-
-    if (electiveError) return handleErrorClient(res, 400, "Error creando electivo", electiveError);
+    if (electiveError) {
+      return handleErrorClient(res, 400, "Error creando electivo", electiveError);
+    }
 
     handleSuccess(res, 201, "Electivo creado y pendiente de validación", elective);
   } catch (error) {
@@ -37,15 +47,21 @@ export async function getElectives(req, res) {
   try {
     let electives, errorElectives;
 
-    if (req.user && req.user.rol === "profesor") {
-      [electives, errorElectives] = await getElectivesByProfesorService(req.user.id);
+    const userRole = req.user?.rol?.toLowerCase();
+
+    if (userRole === "profesor") {
+      [electives, errorElectives] =
+        await getElectivesByProfesorService(req.user.id);
     } else {
-      [electives, errorElectives] = await getAvailableElectivesService();
+      [electives, errorElectives] =
+        await getAvailableElectivesService();
     }
 
-    if (errorElectives) return handleErrorClient(res, 404, errorElectives);
+    if (errorElectives) {
+      return handleErrorClient(res, 404, errorElectives);
+    }
 
-    electives.length === 0 ? handleSuccess(res, 204) : handleSuccess(res, 200, "Electivos disponibles", electives);
+    handleSuccess(res, 200, "Electivos", electives || []);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
@@ -56,19 +72,36 @@ export async function updateElective(req, res) {
     const { id } = req.params;
     const { body } = req;
 
-    if (!id) return handleErrorClient(res, 400, "El id del electivo es requerido");
+    if (!id) {
+      return handleErrorClient(res, 400, "El id del electivo es requerido");
+    }
 
     const idNum = Number(id);
-    if (Number.isNaN(idNum) || !Number.isInteger(idNum)) {
-      return handleErrorClient(res, 400, "Id inválido", "El id del electivo debe ser un número entero válido");
+    if (!Number.isInteger(idNum)) {
+      return handleErrorClient(
+        res,
+        400,
+        "Id inválido",
+        "El id del electivo debe ser un número entero válido"
+      );
     }
 
     const { error } = electiveUpdateValidation.validate(body);
-    if (error) return handleErrorClient(res, 400, "Error de validación", error.message);
+    if (error) {
+      return handleErrorClient(res, 400, "Error de validación", error.message);
+    }
 
-    const [elective, errorElective] = await updateElectiveService(idNum, body, req.user.id);
+    const [elective, errorElective] =
+      await updateElectiveService(idNum, body, req.user.id);
 
-    if (errorElective) return handleErrorClient(res, 400, "Error actualizando electivo", errorElective);
+    if (errorElective) {
+      return handleErrorClient(
+        res,
+        400,
+        "Error actualizando electivo",
+        errorElective
+      );
+    }
 
     handleSuccess(res, 200, "Electivo actualizado correctamente", elective);
   } catch (error) {
@@ -78,11 +111,14 @@ export async function updateElective(req, res) {
 
 export async function getAllElectives(req, res) {
   try {
-    const [electives, errorElectives] = await getAllElectivesService();
+    const [electives, errorElectives] =
+      await getAllElectivesService();
 
-    if (errorElectives) return handleErrorClient(res, 404, errorElectives);
+    if (errorElectives) {
+      return handleErrorClient(res, 404, errorElectives);
+    }
 
-    electives.length === 0 ? handleSuccess(res, 204) : handleSuccess(res, 200, "Todos los electivos", electives);
+    handleSuccess(res, 200, "Todos los electivos", electives || []);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
@@ -92,16 +128,31 @@ export async function validateElective(req, res) {
   try {
     const { id } = req.params;
 
-    if (!id) return handleErrorClient(res, 400, "El id del electivo es requerido");
-
-    const idNum = Number(id);
-    if (Number.isNaN(idNum) || !Number.isInteger(idNum)) {
-      return handleErrorClient(res, 400, "Id inválido", "El id del electivo debe ser un número entero válido");
+    if (!id) {
+      return handleErrorClient(res, 400, "El id del electivo es requerido");
     }
 
-    const [elective, errorElective] = await validateElectiveService(idNum);
+    const idNum = Number(id);
+    if (!Number.isInteger(idNum)) {
+      return handleErrorClient(
+        res,
+        400,
+        "Id inválido",
+        "El id del electivo debe ser un número entero válido"
+      );
+    }
 
-    if (errorElective) return handleErrorClient(res, 400, "Error validando electivo", errorElective);
+    const [elective, errorElective] =
+      await validateElectiveService(idNum);
+
+    if (errorElective) {
+      return handleErrorClient(
+        res,
+        400,
+        "Error validando electivo",
+        errorElective
+      );
+    }
 
     handleSuccess(res, 200, "Electivo validado correctamente", elective);
   } catch (error) {
@@ -113,16 +164,26 @@ export async function getElectiveById(req, res) {
   try {
     const { id } = req.params;
 
-    if (!id) return handleErrorClient(res, 400, "El id del electivo es requerido");
-
-    const idNum = Number(id);
-    if (Number.isNaN(idNum) || !Number.isInteger(idNum)) {
-      return handleErrorClient(res, 400, "Id inválido", "El id del electivo debe ser un número entero válido");
+    if (!id) {
+      return handleErrorClient(res, 400, "El id del electivo es requerido");
     }
 
-    const [elective, errorElective] = await getElectiveByIdService(idNum);
+    const idNum = Number(id);
+    if (!Number.isInteger(idNum)) {
+      return handleErrorClient(
+        res,
+        400,
+        "Id inválido",
+        "El id del electivo debe ser un número entero válido"
+      );
+    }
 
-    if (errorElective) return handleErrorClient(res, 404, errorElective);
+    const [elective, errorElective] =
+      await getElectiveByIdService(idNum);
+
+    if (errorElective) {
+      return handleErrorClient(res, 404, errorElective);
+    }
 
     handleSuccess(res, 200, "Electivo encontrado", elective);
   } catch (error) {

@@ -14,6 +14,9 @@ import {
 
 const router = Router();
 
+
+router.get("/creados", authenticateJwt, isProfessor, getElectives);
+router.get("/all/list", authenticateJwt, isJefeCarrera, getAllElectives);
 router.get("/", authenticateJwt, getElectives);
 router.get("/:id", getElectiveById);
 router.put("/edit/:id", authenticateJwt, isProfessor, updateElective);
@@ -21,6 +24,6 @@ router.post("/", authenticateJwt, isProfessor, createElective);
 
 router.patch("/:id/validate", authenticateJwt, isJefeCarrera, validateElective);
 
-router.get("/all/list", authenticateJwt,  getAllElectives);
+
 
 export default router;

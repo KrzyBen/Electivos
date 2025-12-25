@@ -10,6 +10,8 @@ import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import Electives from '@pages/Electives';
 import ElectiveForm from '@components/ElectiveForm';
+import ElectiveDetail from '@pages/ElectiveDetail';
+import JefeCarreraElectives from '@pages/JefeCarreraElectives';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -35,12 +37,20 @@ const router = createBrowserRouter([
         element: <Electives/>
       },
       {
+        path: '/all/list',
+        element: <JefeCarreraElectives/>
+      },
+      {
         path: '/electives/new',
         element: <ElectiveForm isEdit={false}/>
       },
       {
         path: '/electives/:id/edit',
         element: <ElectiveForm isEdit={true}/>
+      }
+      ,{
+        path: '/electives/:id',
+        element: <ElectiveDetail/>
       }
     ]
   },

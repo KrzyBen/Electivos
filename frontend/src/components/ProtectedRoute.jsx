@@ -8,10 +8,10 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
         return <Navigate to="/auth" />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user?.rol)) {
+    const userRole = user?.rol?.toLowerCase();
+    if (allowedRoles && !allowedRoles.map(r => r.toLowerCase()).includes(userRole)) {
         return <Navigate to="/home" />;
     }
-
     return children;
 };
 
