@@ -11,6 +11,10 @@ import '@styles/styles.css';
 
 //Importado de las paginas de alumno
 import MisElectivos from '@pages/MisElectivos';
+import GestionPeriodos from '@pages/GestionPeriodos';
+import InscripcionEspecial from '@pages/InscripcionEspecial';
+import { getAllPeriods, addElectivesToPeriod } from '@services/registrationperiod.service';
+import { getAllElectives } from '@services/elective.service';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +22,10 @@ const router = createBrowserRouter([
     element: <Root/>,
     errorElement: <Error404/>,
     children: [
+      {
+        index: true,
+        element: <Home/> 
+      },
       {
         path: '/home',
         element: <Home/>
@@ -36,6 +44,14 @@ const router = createBrowserRouter([
           <ProtectedRoute allowedRoles={["Alumno"]}>
             <MisElectivos />
           </ProtectedRoute>
+          )
+        },
+        {
+          path: "/gestion-periodos",
+          element: (
+            <ProtectedRoute allowedRoles={["administrador"]}>
+              <GestionPeriodos />
+            </ProtectedRoute>
           )
         }
     ]

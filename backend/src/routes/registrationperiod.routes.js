@@ -5,13 +5,21 @@ import { isAdmin } from "../middlewares/authorization.middleware.js";
 import { 
   createPeriod, 
   getActivePeriod, 
-  addElectivesToPeriod 
+  addElectivesToPeriod,
+  getAllPeriods,
+  deletePeriod
 } from "../controllers/registrationperiod.controller.js";
 
 const router = Router();
 
 // Ruta para que el jefe de carrera cree un período
 router.post("/", authenticateJwt, isAdmin, createPeriod);
+
+// ruta para ver todos los períodos
+router.get("/", authenticateJwt, isAdmin, getAllPeriods);
+
+// eliminar período
+router.delete("/:id", authenticateJwt, isAdmin, deletePeriod);
 
 // Ruta para que cualquier usuario autenticado verifique el período activo
 router.get("/active", authenticateJwt, getActivePeriod);

@@ -1,9 +1,11 @@
 "use strict";
-import { specialRegistrationService } from "../services/registration.service.js";
 import {
+  specialRegistrationService,
   createRegistrationsFromListaService,
   listarPendingRegistrationsForElectiveService,
   listarPendingRegistrationsForElectiveWithFilter,
+  getRegistrationsByStudentService,
+  unenrollStudentService, 
 } from "../services/registration.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
@@ -15,11 +17,68 @@ export async function specialRegistration(req, res) {
       return handleErrorClient(res, 400, "studentId, electiveId y periodId son requeridos");
     }
 
-    const [registration, error] = await specialRegistrationService(studentId, electiveId, periodId);
+    const [registration, error] = await specialRegistrationService(
+      Number(studentId), 
+      Number(electiveId), 
+      Number(periodId)
+    );
 
-    if (error) return handleErrorClient(res, 400, "Error en la inscripción especial", error);
+    
+    if (error) {
+      
+      if (typeof error === "object" && error.conflicto) {
+        return handleErrorClient(res, 409, error.message);
+      }
+      
+      return handleErrorClient(res, 400, "Error en la inscripción especial", error);
+    }
+    
 
     handleSuccess(res, 201, "Inscripción especial realizada con éxito", registration);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+
+export async function getRegistrationsByStudent(req, res) {
+  try {
+    const { studentId } = req.params;
+    if (!studentId) {
+      return handleErrorClient(res, 400, "El ID del estudiante es requerido");
+    }
+
+    const [registrations, error] = await getRegistrationsByStudentService(Number(studentId));
+
+    if (error) {
+      return handleErrorClient(res, 500, "Error obteniendo las inscripciones", error);
+    }
+
+    if (!registrations || registrations.length === 0) {
+      return handleSuccess(res, 204); 
+    }
+
+    handleSuccess(res, 200, "Inscripciones del estudiante obtenidas", registrations);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+
+export async function unenrollStudent(req, res) {
+  try {
+    const { registrationId } = req.params;
+    if (!registrationId) {
+      return handleErrorClient(res, 400, "El ID de la inscripción es requerido");
+    }
+
+    const [result, error] = await unenrollStudentService(Number(registrationId));
+
+    if (error) {
+      return handleErrorClient(res, 404, "Error al desinscribir", error);
+    }
+
+    handleSuccess(res, 200, "Estudiante desinscrito correctamente", result);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
