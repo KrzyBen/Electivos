@@ -20,16 +20,20 @@
 			padding: 0 60px;
 			position: relative;
 			height: 100%;
-			a {
-				color: white;
-				font-size: 0.9em;
-				text-decoration: none;
-				position: relative;
-				border-bottom: transparent 3px solid;
-				transition: border-color 0.3s ease;
-				padding: 0 10px 3px 10px;
-				box-sizing: border-box;
-			}
+				a {
+					display: inline-flex;
+					align-items: center;
+					height: 100%;
+					line-height: 9vh;
+					color: white;
+					font-size: 0.9em;
+					text-decoration: none;
+					position: relative;
+					border-bottom: transparent 3px solid;
+					transition: border-color 0.3s ease;
+					padding: 0 10px 0 10px;
+					box-sizing: border-box;
+				}
 			:not(.active)::before {
 				content: "";
 				position: absolute;
@@ -46,16 +50,14 @@
 				animation: heartbeat 5s ease-in-out infinite;
 				transform: scaleX(1);
 			}
-			.active {
-				font-weight: bold;
-				background-color: #eef7ff;
-				color: #002651;
-				margin: 0;
-				padding-bottom: 0;
-				border: 0;
-				height: 100%;
-				line-height: 9.1vh;
-			}
+				.active {
+					font-weight: bold;
+					background-color: #eef7ff;
+					color: #002651;
+					margin: 0;
+					padding-bottom: 0;
+					border: 0;
+				}
 		}
 	}
 }

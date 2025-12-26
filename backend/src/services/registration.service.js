@@ -5,7 +5,8 @@ import Elective from "../entity/elective.entity.js";
 import RegistrationPeriod from "../entity/registrationperiod.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import ElectivoLista from "../entity/electivoLista.entity.js";
-// User already imported above
+import Notification from "../entity/notification.entity.js"; 
+
 
 export async function specialRegistrationService(studentId, electiveId, periodId) {
   try {
@@ -23,17 +24,41 @@ export async function specialRegistrationService(studentId, electiveId, periodId
     const period = await periodRepository.findOneBy({ id: periodId });
     if (!period) return [null, "Período no encontrado"];
 
-    const existingRegistration = await registrationRepository.findOne({
-      where: {student: { id: studentId }, period: { id: periodId }, elective: { id: electiveId }}
+    
+
+    // Buscar todas las inscripciones del alumno en el mismo período
+    const studentRegistrationsInPeriod = await registrationRepository.find({
+      where: { student: { id: studentId }, period: { id: periodId } },
+      relations: ["elective"],
     });
 
-    if (existingRegistration) return [null, "El estudiante ya está inscrito en este electivo para este período"];
+    // Revisar si ya está inscrito en el mismo electivo
+    const alreadyRegistered = studentRegistrationsInPeriod.some(
+      (reg) => reg.elective.id === electiveId
+    );
+    if (alreadyRegistered) {
+      return [null, "El estudiante ya está inscrito en este electivo para este período."];
+    }
+
+    // Revisar si hay conflicto de horario con otros electivos en el mismo período
+    const scheduleConflict = studentRegistrationsInPeriod.find(
+      (reg) => reg.elective.horario === elective.horario
+    );
+
+    if (scheduleConflict) {
+      const errorMessage = `Conflicto de horario: El alumno ya está inscrito en '${scheduleConflict.elective.titulo}', que tiene el mismo horario.`;
+      
+      return [null, { conflicto: true, message: errorMessage }];
+    }
+
+    
 
     const newRegistration = registrationRepository.create({
       student,
       elective,
       period,
       specialRegistration: true,
+      pending: false, 
     });
 
     const saved = await registrationRepository.save(newRegistration);
@@ -41,6 +66,64 @@ export async function specialRegistrationService(studentId, electiveId, periodId
 
   } catch (error) {
     console.error("Error en el servicio de inscripción especial:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+
+export async function unenrollStudentService(registrationId) {
+  try {
+    const registrationRepository = AppDataSource.getRepository(Registration);
+    const electiveRepository = AppDataSource.getRepository(Elective);
+
+    
+    const result = await AppDataSource.transaction(async (transactionalEntityManager) => {
+      const regRepo = transactionalEntityManager.getRepository(Registration);
+      const electRepo = transactionalEntityManager.getRepository(Elective);
+
+      
+      const registration = await regRepo.findOne({
+        where: { id: registrationId },
+        relations: ["elective"],
+      });
+
+      if (!registration) {
+        throw new Error("Inscripción no encontrada.");
+      }
+
+      const electiveId = registration.elective?.id;
+
+      
+      await regRepo.remove(registration);
+
+      // Si la inscripción estaba asociada a un electivo, liberar el cupo
+      if (electiveId) {
+        await electRepo.increment({ id: electiveId }, "cupoDisponible", 1);
+      }
+
+      return { unenroll: true, registrationId };
+    });
+
+    return [result, null];
+  } catch (error) {
+    console.error("Error en el servicio de desinscripción:", error);
+    
+    return [null, error.message || "Error interno del servidor"];
+  }
+}
+
+
+export async function getRegistrationsByStudentService(studentId) {
+  try {
+    const registrationRepository = AppDataSource.getRepository(Registration);
+    const registrations = await registrationRepository.find({
+      where: { student: { id: studentId } },
+      relations: ["elective", "period"],
+      order: { registeredAt: "DESC" },
+    });
+    return [registrations, null];
+  } catch (error) {
+    console.error("Error en getRegistrationsByStudentService:", error);
     return [null, "Error interno del servidor"];
   }
 }
@@ -54,7 +137,7 @@ export async function createRegistrationsFromListaService(periodId) {
     const period = await periodRepository.findOneBy({ id: periodId });
     if (!period) return [null, "Período no encontrado"];
 
-    // Obtener todas las entradas de lista con alumno y electivo
+    
     const lista = await listaRepository.find({ relations: ["alumno", "electivo"] });
 
     const created = [];
@@ -65,7 +148,7 @@ export async function createRegistrationsFromListaService(periodId) {
 
       if (!studentId || !electiveId) continue;
 
-      // Evitar duplicados: ya inscrito en el mismo periodo
+      
       const existing = await registrationRepository.findOne({
         where: {
           student: { id: studentId },
@@ -100,11 +183,11 @@ export async function listarPendingRegistrationsForElectiveService(jefeEmail, el
     const registrationRepository = AppDataSource.getRepository(Registration);
     const userRepository = AppDataSource.getRepository(User);
 
-    // obtener carrera del jefe
+    
     const jefe = await userRepository.findOne({ where: { email: jefeEmail } });
     if (!jefe) return [null, "Jefe de carrera no encontrado"];
 
-    // obtener todas las inscripciones pendientes para el electivo (y periodo si se entrega)
+    
     const whereClause = { pending: true, elective: { id: electiveId } };
     if (periodId) whereClause.period = { id: periodId };
 
@@ -161,6 +244,26 @@ export async function listarPendingRegistrationsForElectiveWithFilter(careerFilt
     return [{ total: filtered.length, items: filtered }, null];
   } catch (error) {
     console.error("Error listando solicitudes pendientes (filter):", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function markNotificationsAsReadService(userId, notificationIds) {
+  try {
+    const notificationRepository = AppDataSource.getRepository(Notification);
+    
+    const result = await notificationRepository.update(
+      { id: In(notificationIds), user: { id: userId } },
+      { read: true } 
+    );
+
+    if (result.affected === 0) {
+      return [null, "No se encontraron notificaciones para marcar como leídas."];
+    }
+
+    return [{ updatedCount: result.affected }, null];
+  } catch (error) {
+    console.error("Error marcando notificaciones como leídas:", error);
     return [null, "Error interno del servidor"];
   }
 }

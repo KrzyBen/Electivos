@@ -9,10 +9,12 @@ import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
-//Importado de las paginas de alumno
+// Páginas alumno
 import MisElectivos from '@pages/MisElectivos';
+import GestionPeriodos from '@pages/GestionPeriodos';
+import InscripcionEspecial from '@pages/InscripcionEspecial';
 
-//Electivos
+// Electivos
 import Electives from '@pages/Electives';
 import ElectiveForm from '@components/ElectiveForm';
 import ElectiveDetail from '@pages/ElectiveDetail';
@@ -24,6 +26,10 @@ const router = createBrowserRouter([
     element: <Root/>,
     errorElement: <Error404/>,
     children: [
+      {
+        index: true,
+        element: <Home/> 
+      },
       {
         path: '/home',
         element: <Home/>
@@ -44,34 +50,42 @@ const router = createBrowserRouter([
           </ProtectedRoute>
           )
         },
-              {
-                path: '/electives',
-                element: <Electives/>
-              },
-              {
-                path: '/all/list',
-                element: <JefeCarreraElectives/>
-              },
-              {
-                path: '/electives/new',
-                element: (
-                  <ProtectedRoute allowedRoles={["Profesor"]}>
-                    <ElectiveForm isEdit={false}/>
-                  </ProtectedRoute>
-                )
-              },
-              {
-                path: '/electives/:id/edit',
-                element: (
-                  <ProtectedRoute allowedRoles={["Profesor"]}>
-                    <ElectiveForm isEdit={true}/>
-                  </ProtectedRoute>
-                )
-              },
-              {
-                path: '/electives/:id',
-                element: <ElectiveDetail/>
-              }
+        {
+          path: "/gestion-periodos",
+          element: (
+            <ProtectedRoute allowedRoles={["administrador"]}>
+              <GestionPeriodos />
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: '/electives',
+          element: <Electives/>
+        },
+        {
+          path: '/all/list',
+          element: <JefeCarreraElectives/>
+        },
+        {
+          path: '/electives/new',
+          element: (
+            <ProtectedRoute allowedRoles={["Profesor"]}>
+              <ElectiveForm isEdit={false}/>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: '/electives/:id/edit',
+          element: (
+            <ProtectedRoute allowedRoles={["Profesor"]}>
+              <ElectiveForm isEdit={true}/>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: '/electives/:id',
+          element: <ElectiveDetail/>
+        }
     ]
   },
   {

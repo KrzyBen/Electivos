@@ -1,12 +1,13 @@
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
 import '@styles/navbar.css';
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
+    const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
     const userRole = user?.rol;
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -20,120 +21,71 @@ const Navbar = () => {
     };
 
     const toggleMenu = () => {
-        if (!menuOpen) {
-            removeActiveClass();
-        } else {
-            addActiveClass();
-        }
-        setMenuOpen(!menuOpen);
+        setMenuOpen((prev) => !prev);
     };
 
-    const removeActiveClass = () => {
-        const activeLinks = document.querySelectorAll('.nav-menu ul li a.active');
-        activeLinks.forEach(link => link.classList.remove('active'));
-    };
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [location]);
 
-    const addActiveClass = () => {
-        const links = document.querySelectorAll('.nav-menu ul li a');
-        links.forEach(link => {
-            if (link.getAttribute('href') === location.pathname) {
-                link.classList.add('active');
-            }
-        });
-    };
+    const linkClass = ({ isActive }) => isActive ? 'active' : '';
+    const closeMenu = () => setMenuOpen(false);
 
     return (
         <nav className="navbar">
             <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
                 <ul>
                     <li>
-                        <NavLink 
-                            to="/home" 
-                            onClick={() => { 
-                                setMenuOpen(false); 
-                                addActiveClass();
-                            }} 
-                            activeClassName="active"
-                        >
+                        <NavLink to="/home" className={linkClass} onClick={closeMenu}>
                             Inicio
                         </NavLink>
                     </li>
                     {userRole === 'administrador' && (
-                      <>
-                        <li>
-                            <NavLink 
-                                to="/users" 
-                                onClick={() => { 
-                                    setMenuOpen(false); 
-                                    addActiveClass();
-                                }} 
-                                className={({ isActive }) => isActive ? "active" : undefined}
-                            >
-                                Usuarios
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink 
-                                to="/all/list" 
-                                onClick={() => { 
-                                    setMenuOpen(false); 
-                                    addActiveClass();
-                                }} 
-                                className={({ isActive }) => isActive ? "active" : undefined}
-                            >
-                                Todos los Electivos
-                            </NavLink>
-                        </li>
-                      </>
+                        <>
+                          <li>
+                              <NavLink to="/users" className={linkClass} onClick={closeMenu}>
+                                  Usuarios
+                              </NavLink>
+                          </li>
+                          <li>
+                              <NavLink to="/gestion-periodos" className={linkClass} onClick={closeMenu}>
+                                  Gestionar Períodos
+                              </NavLink>
+                          </li>
+                          <li>
+                              <NavLink to="/all/list" className={linkClass} onClick={closeMenu}>
+                                  Todos los Electivos
+                              </NavLink>
+                          </li>
+                        </>
                     )}
                     {userRole === 'Alumno' && (
-                    <>
-                    <li>
-                    <NavLink
-                        to="/mis-electivos"
-                        onClick={() => { 
-                        setMenuOpen(false);
-                        addActiveClass();
-                        }}
-                        activeClassName="active"
-                    >
-                        Mis Electivos
-                    </NavLink>
-                    </li>
-                    </>
-                    )}
-
-                    {userRole === 'Profesor' && (
                         <li>
-                            <NavLink
-                            to="/electives"
-                            onClick={() => { 
-                                setMenuOpen(false); 
-                                addActiveClass();
-                            }}
-                            >
-                            Mis Electivos
+                            <NavLink to="/mis-electivos" className={linkClass} onClick={closeMenu}>
+                                Mis Electivos
                             </NavLink>
                         </li>
-                        )}
+                    )}
+                    {userRole === 'Profesor' && (
+                        <li>
+                            <NavLink to="/electives" className={linkClass} onClick={closeMenu}>
+                              Mis Electivos
+                            </NavLink>
+                        </li>
+                    )}
                     <li>
-                        <NavLink 
-                            to="/auth" 
-                            onClick={() => { 
-                                logoutSubmit(); 
-                                setMenuOpen(false); 
-                            }} 
-                            activeClassName="active"
-                        >
+                        <NavLink to="/auth" onClick={() => { logoutSubmit(); closeMenu(); }}>
                             Cerrar sesión
                         </NavLink>
                     </li>
                 </ul>
             </div>
-            <div className="hamburger" onClick={toggleMenu}>
-                <span className="bar"></span>
-                <span className="bar"></span>
-                <span className="bar"></span>
+            <div className="nav-right">
+                <div className="hamburger" onClick={toggleMenu}>
+                    <span className="bar"></span>
+                    <span className="bar"></span>
+                    <span className="bar"></span>
+                </div>
             </div>
         </nav>
     );

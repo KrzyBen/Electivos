@@ -1,11 +1,13 @@
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '@styles/form.css';
 import HideIcon from '../assets/HideIcon.svg';
 import ViewIcon from '../assets/ViewIcon.svg';
 
-const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundColor }) => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundColor, initialData }) => {
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+        defaultValues: initialData
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
@@ -16,6 +18,12 @@ const Form = ({ title, fields, buttonText, onSubmit, footerContent, backgroundCo
     const toggleNewPasswordVisibility = () => {
         setShowNewPassword(!showNewPassword);
     };
+
+    useEffect(() => {
+        if (initialData) {
+            reset(initialData);
+        }
+    }, [initialData, reset]);
 
     const onFormSubmit = (data) => {
         onSubmit(data);

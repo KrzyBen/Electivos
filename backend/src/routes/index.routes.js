@@ -6,7 +6,7 @@ import electiveRoutes from "./elective.routes.js";
 import registrationPeriodRoutes from "./registrationperiod.routes.js";
 import registrationRoutes from "./registration.routes.js";
 import electiveListaRoutes from "./electivosLista.routes.js";
-
+import notificationRoutes from "./notification.routes.js"; 
 const router = Router();
 
 router
@@ -15,7 +15,7 @@ router
     .use("/electives", electiveRoutes)
     .use("/registration-period", registrationPeriodRoutes)
     .use("/registration", registrationRoutes)
-    .use("/electivo_Alumno", electiveListaRoutes);
-
+    .use("/electivo_Alumno", electiveListaRoutes)
+    .use("/notifications", notificationRoutes); 
 
 export default router;

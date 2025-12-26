@@ -2,7 +2,9 @@
 import { 
   createPeriodService, 
   getActivePeriodService, 
-  addElectivesToPeriodService 
+  addElectivesToPeriodService,
+  getAllPeriodsService,
+  deletePeriodService
 } from "../services/registrationperiod.service.js";
 import { periodValidation } from "../validations/registrationperiod.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
@@ -35,21 +37,54 @@ export async function getActivePeriod(req, res) {
     }
 }
 
+
+export async function getAllPeriods(req, res) {
+  try {
+    const [periods, error] = await getAllPeriodsService();
+    if (error) return handleErrorClient(res, 500, "Error obteniendo los períodos", error);
+    if (!periods || periods.length === 0) return handleSuccess(res, 204);
+    
+    handleSuccess(res, 200, "Períodos de inscripción encontrados", periods);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
 export async function addElectivesToPeriod(req, res) {
   try {
     const { id } = req.params;
-    const { electiveIds } = req.body;
+    const { electiveIds, comments } = req.body;
 
     if (!id) return handleErrorClient(res, 400, "El ID del período es requerido");
-    if (!Array.isArray(electiveIds) || electiveIds.length === 0) {
+    if (!Array.isArray(electiveIds)) {
       return handleErrorClient(res, 400, "Se requiere un arreglo de IDs de electivos");
     }
 
-    const [period, error] = await addElectivesToPeriodService(Number(id), electiveIds);
+    const [period, error] = await addElectivesToPeriodService(Number(id), electiveIds, comments || {});
 
     if (error) return handleErrorClient(res, 400, "Error al asociar electivos", error);
 
     handleSuccess(res, 200, "Electivos añadidos al período correctamente", period);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function deletePeriod(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id) return handleErrorClient(res, 400, "El ID del período es requerido");
+
+    const [ok, error] = await deletePeriodService(Number(id));
+    if (error) {
+      const statusCode = error.status || 400;
+      if (statusCode >= 500) {
+        return handleErrorServer(res, statusCode, error.message);
+      }
+      return handleErrorClient(res, statusCode, "Error eliminando el período", error.message);
+    }
+
+    handleSuccess(res, 200, "Período eliminado exitosamente", ok);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
