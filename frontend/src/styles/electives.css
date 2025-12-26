@@ -1,0 +1,93 @@
+.electives-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.electives-page h2 {
+  margin-top: 2.5rem;
+}
+
+.electives-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.elective-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: box-shadow 0.2s;
+}
+.elective-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.elective-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #003366;
+}
+.elective-card p {
+  margin: 0.3rem 0;
+  color: #222;
+}
+.card-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+.card-actions .btn {
+  background: #003366;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.card-actions .btn:hover {
+  background: #0055a5;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  list-style: none;
+  padding: 0;
+  background: linear-gradient(90deg, #0055a5 0%, #003366 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1.08rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,85,165,0.10);
+  letter-spacing: 0.5px;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  background: linear-gradient(90deg, #003366 0%, #0055a5 100%);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 16px rgba(0,85,165,0.18);
+  transition: background 0.2s;
+}
+.pagination li.active a {
+  background: #003366;
+  color: #fff;
+}
+.pagination li a:hover {
+  background: #cce0ff;
+}

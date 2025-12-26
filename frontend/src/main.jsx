@@ -12,6 +12,12 @@ import '@styles/styles.css';
 //Importado de las paginas de alumno
 import MisElectivos from '@pages/MisElectivos';
 
+//Electivos
+import Electives from '@pages/Electives';
+import ElectiveForm from '@components/ElectiveForm';
+import ElectiveDetail from '@pages/ElectiveDetail';
+import JefeCarreraElectives from '@pages/JefeCarreraElectives';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -37,7 +43,35 @@ const router = createBrowserRouter([
             <MisElectivos />
           </ProtectedRoute>
           )
-        }
+        },
+              {
+                path: '/electives',
+                element: <Electives/>
+              },
+              {
+                path: '/all/list',
+                element: <JefeCarreraElectives/>
+              },
+              {
+                path: '/electives/new',
+                element: (
+                  <ProtectedRoute allowedRoles={["Profesor"]}>
+                    <ElectiveForm isEdit={false}/>
+                  </ProtectedRoute>
+                )
+              },
+              {
+                path: '/electives/:id/edit',
+                element: (
+                  <ProtectedRoute allowedRoles={["Profesor"]}>
+                    <ElectiveForm isEdit={true}/>
+                  </ProtectedRoute>
+                )
+              },
+              {
+                path: '/electives/:id',
+                element: <ElectiveDetail/>
+              }
     ]
   },
   {
