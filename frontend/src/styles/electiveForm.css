@@ -1,0 +1,87 @@
+.elective-form {
+  max-width: 500px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 2rem 2rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.elective-form h2 {
+  margin-top: 0;
+  color: #003366;
+  text-align: center;
+}
+.elective-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #003366;
+  gap: 0.3rem;
+}
+.elective-form input,
+.elective-form textarea {
+  border: 1px solid #cce0ff;
+  border-radius: 6px;
+  padding: 0.6rem;
+  font-size: 1rem;
+  background: #f7faff;
+  color: #222;
+  transition: border 0.2s;
+}
+.elective-form input:focus,
+.elective-form textarea:focus {
+  border-color: #003366;
+  outline: none;
+}
+.elective-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.elective-form button {
+  background: linear-gradient(90deg, #0055a5 0%, #003366 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.7rem;
+  font-size: 1.13rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0,85,165,0.10);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  outline: none;
+}
+.elective-form button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+.elective-form button:hover:not(:disabled) {
+  background: linear-gradient(90deg, #003366 0%, #0055a5 100%);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 16px rgba(0,85,165,0.18);
+}
+.elective-form .cancel-btn {
+  background: #fff;
+  color: #003366;
+  border: 2px solid #003366;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.elective-form .cancel-btn:hover {
+  background: #003366;
+  color: #fff;
+  border: 2px solid #0055a5;
+}
+.elective-form .error {
+  color: #c00;
+  background: #ffeaea;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}

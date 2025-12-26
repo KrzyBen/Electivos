@@ -44,6 +44,17 @@ const NotificationPopup = ({ notifications, onClose, onMarkRead }) => {
                       </button>
                     </div>
                   )}
+                  {isApproved(notif.message) && (
+                    <div className="al-popup-actions" style={{ justifyContent: 'flex-start', marginTop: '8px' }}>
+                      <button
+                        className="al-btn-confirm"
+                        onClick={() => handleMark(notif.id)}
+                        disabled={loadingId === notif.id}
+                      >
+                        {loadingId === notif.id ? 'Marcando...' : 'Marcar leído'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })}

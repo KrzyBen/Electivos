@@ -76,7 +76,13 @@ export async function deletePeriod(req, res) {
     if (!id) return handleErrorClient(res, 400, "El ID del período es requerido");
 
     const [ok, error] = await deletePeriodService(Number(id));
-    if (error) return handleErrorClient(res, 404, "Error eliminando el período", error);
+    if (error) {
+      const statusCode = error.status || 400;
+      if (statusCode >= 500) {
+        return handleErrorServer(res, statusCode, error.message);
+      }
+      return handleErrorClient(res, statusCode, "Error eliminando el período", error.message);
+    }
 
     handleSuccess(res, 200, "Período eliminado exitosamente", ok);
   } catch (error) {

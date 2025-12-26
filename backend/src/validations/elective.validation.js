@@ -2,6 +2,18 @@
 import Joi from "joi";
 
 export const electiveValidation = Joi.object({
+  titulo: Joi.string().min(5).max(255).required(),
+  contenidos: Joi.string().min(10).required(),
+
+  cupoMaximo: Joi.number().integer().min(1).max(40).required(),
+
+  horario: Joi.string().min(5).max(255).required(),
+
+  requisitos: Joi.string().allow(null, "").max(2000),
+}).unknown(false);
+
+
+export const electiveUpdateValidation = Joi.object({
   titulo: Joi.string().min(5).max(255).required().messages({
     "string.empty": "El título no puede estar vacío.",
     "any.required": "El título es obligatorio.",

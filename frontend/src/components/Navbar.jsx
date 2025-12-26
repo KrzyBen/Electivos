@@ -34,23 +34,35 @@ const Navbar = () => {
             <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
                 <ul>
                     {userRole === 'administrador' && (
-                        <li>
-                            <NavLink to="/users" className={({ isActive }) => isActive ? 'active' : ''}>
-                                Usuarios
-                            </NavLink>
-                        </li>
-                    )}
-                    {userRole === 'administrador' && (
-                        <li>
-                            <NavLink to="/gestion-periodos" className={({ isActive }) => isActive ? 'active' : ''}>
-                                Gestionar Períodos
-                            </NavLink>
-                        </li>
+                        <>
+                          <li>
+                              <NavLink to="/users" className={({ isActive }) => isActive ? 'active' : ''}>
+                                  Usuarios
+                              </NavLink>
+                          </li>
+                          <li>
+                              <NavLink to="/gestion-periodos" className={({ isActive }) => isActive ? 'active' : ''}>
+                                  Gestionar Períodos
+                              </NavLink>
+                          </li>
+                          <li>
+                              <NavLink to="/all/list" className={({ isActive }) => isActive ? 'active' : ''}>
+                                  Todos los Electivos
+                              </NavLink>
+                          </li>
+                        </>
                     )}
                     {userRole === 'Alumno' && (
                         <li>
                             <NavLink to="/mis-electivos" className={({ isActive }) => isActive ? 'active' : ''}>
                                 Mis Electivos
+                            </NavLink>
+                        </li>
+                    )}
+                    {userRole === 'Profesor' && (
+                        <li>
+                            <NavLink to="/electives" className={({ isActive }) => isActive ? 'active' : ''}>
+                              Mis Electivos
                             </NavLink>
                         </li>
                     )}

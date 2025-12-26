@@ -13,7 +13,7 @@ export async function isJefeCarrera(req, res, next) {
 
     const rolUser = userFound.rol;
 
-    if (rolUser !== "JefeCarrera") {
+    if (rolUser !== "administrador") {
       return handleErrorClient(res, 403, "Error al acceder al recurso", "Se requiere un rol de jefe de carrera para realizar esta acción.");
     }
 

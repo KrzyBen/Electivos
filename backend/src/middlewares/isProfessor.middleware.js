@@ -13,7 +13,7 @@ export async function isProfessor(req, res, next) {
 
 		const rolUser = userFound.rol;
 
-		if (rolUser !== "profesor") {
+		if (rolUser !== "Profesor") {
 			return handleErrorClient(res, 403, "Error al acceder al recurso", "Se requiere un rol de profesor para realizar esta acción.");
 		}
 

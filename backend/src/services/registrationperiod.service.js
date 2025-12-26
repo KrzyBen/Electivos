@@ -1,6 +1,7 @@
 "use strict";
 import RegistrationPeriod from "../entity/registrationperiod.entity.js";
 import Elective from "../entity/elective.entity.js";
+import Registration from "../entity/registration.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import { In, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { createNotificationService } from "./notification.service.js"; 
@@ -49,11 +50,24 @@ export async function getAllPeriodsService() {
 export async function deletePeriodService(id) {
   try {
     const periodRepository = AppDataSource.getRepository(RegistrationPeriod);
-    const result = await periodRepository.delete(id);
-    if (result.affected === 0) return [null, "Período no encontrado"];
+    const registrationRepository = AppDataSource.getRepository(Registration);
+
+    const period = await periodRepository.findOne({ where: { id }, relations: ["electives"] });
+    if (!period) return [null, { status: 404, message: "Período no encontrado" }];
+
+    const registrationsCount = await registrationRepository.count({ where: { period: { id } } });
+    if (registrationsCount > 0) {
+      return [null, { status: 409, message: "No se puede eliminar el período porque existen inscripciones asociadas" }];
+    }
+
+    // Desasociar electivos antes de eliminar
+    period.electives = [];
+    await periodRepository.save(period);
+    await periodRepository.delete(id);
+
     return [true, null];
   } catch (error) {
-    return [null, "Error interno del servidor"];
+    return [null, { status: 500, message: "Error interno del servidor" }];
   }
 }
 

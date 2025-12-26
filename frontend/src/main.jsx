@@ -9,12 +9,16 @@ import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
-//Importado de las paginas de alumno
+// Páginas alumno
 import MisElectivos from '@pages/MisElectivos';
 import GestionPeriodos from '@pages/GestionPeriodos';
 import InscripcionEspecial from '@pages/InscripcionEspecial';
-import { getAllPeriods, addElectivesToPeriod } from '@services/registrationperiod.service';
-import { getAllElectives } from '@services/elective.service';
+
+// Electivos
+import Electives from '@pages/Electives';
+import ElectiveForm from '@components/ElectiveForm';
+import ElectiveDetail from '@pages/ElectiveDetail';
+import JefeCarreraElectives from '@pages/JefeCarreraElectives';
 
 const router = createBrowserRouter([
   {
@@ -53,6 +57,34 @@ const router = createBrowserRouter([
               <GestionPeriodos />
             </ProtectedRoute>
           )
+        },
+        {
+          path: '/electives',
+          element: <Electives/>
+        },
+        {
+          path: '/all/list',
+          element: <JefeCarreraElectives/>
+        },
+        {
+          path: '/electives/new',
+          element: (
+            <ProtectedRoute allowedRoles={["Profesor"]}>
+              <ElectiveForm isEdit={false}/>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: '/electives/:id/edit',
+          element: (
+            <ProtectedRoute allowedRoles={["Profesor"]}>
+              <ElectiveForm isEdit={true}/>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: '/electives/:id',
+          element: <ElectiveDetail/>
         }
     ]
   },

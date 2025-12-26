@@ -27,7 +27,18 @@ const Login = () => {
     };
 
     return (
-        <main className="container">
+        <main
+            className="container login-bg"
+            style={{
+                minHeight: '100vh',
+                backgroundImage: 'url(/electivos.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
             <Form
                 title="Iniciar sesión"
                 fields={[
