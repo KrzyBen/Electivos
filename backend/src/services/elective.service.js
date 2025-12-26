@@ -6,15 +6,20 @@ export async function createElectiveService(body, profesorUser) {
   try {
     const electiveRepository = AppDataSource.getRepository(Elective);
 
-    if (body.cupoMaximo > 45) {
-      return [null, "El cupo máximo permitido es 45"]; 
+    if (body.cupoMaximo > 40) {
+      return [null, "El cupo máximo permitido es 40"];
     }
 
     const newElective = electiveRepository.create({
       titulo: body.titulo,
       contenidos: body.contenidos,
       cupoMaximo: body.cupoMaximo,
+
+      // nuevos campos
       cupoDisponible: body.cupoMaximo,
+      cupoMaximoCarrera: 10,
+      cupoDisponibleCarrera: 10,
+
       horario: body.horario,
       requisitos: body.requisitos || null,
       profesor: profesorUser,
@@ -23,19 +28,25 @@ export async function createElectiveService(body, profesorUser) {
 
     const saved = await electiveRepository.save(newElective);
 
-    return [saved, null];
+    const savedWithProfesor = await electiveRepository.findOne({
+      where: { id: saved.id },
+      relations: ["profesor"],
+    });
+
+    return [savedWithProfesor ?? saved, null];
   } catch (error) {
     console.error("Error al crear electivo:", error);
     return [null, "Error interno del servidor"];
   }
 }
 
+
 export async function getAvailableElectivesService() {
   try {
     const electiveRepository = AppDataSource.getRepository(Elective);
 
     const electives = await electiveRepository.find({
-      where: { validado: true },
+      where: {validado: true, cupoDisponible: MoreThan(0),},
       relations: ["profesor"],
     });
 
@@ -92,6 +103,66 @@ export async function getElectiveByIdService(id) {
     return [elective, null];
   } catch (error) {
     console.error("Error al obtener electivo:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function updateElectiveService(id, updates, profesorId) {
+  try {
+    const electiveRepository = AppDataSource.getRepository(Elective);
+
+    const electiveFound = await electiveRepository.findOne({
+      where: { id: Number(id) },
+      relations: ["profesor"],
+    });
+
+    if (!electiveFound) return [null, "Electivo no encontrado"];
+    
+    if (electiveFound.profesor.id !== profesorId) {
+      return [null, "No tienes permiso para editar este electivo"];
+    }
+
+    if (electiveFound.validado) {
+      return [null, "No se puede editar un electivo ya validado"];
+    }
+
+    if (updates.cupoMaximo > 40) {
+      return [null, "El cupo máximo permitido es 40"];
+    }
+
+    if (updates.cupoMaximo < electiveFound.cupoDisponible) {
+      return [null, "El cupo máximo no puede ser menor al cupo disponible"];
+    }
+
+    electiveFound.titulo = updates.titulo;
+    electiveFound.contenidos = updates.contenidos;
+    electiveFound.cupoMaximo = updates.cupoMaximo;
+    electiveFound.horario = updates.horario;
+    electiveFound.requisitos = updates.requisitos || null;
+    electiveFound.updatedAt = new Date();
+
+
+    const saved = await electiveRepository.save(electiveFound);
+
+    return [saved, null];
+  } catch (error) {
+    console.error("Error al actualizar electivo:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function getElectivesByProfesorService(profesorId) {
+  try {
+    const electiveRepository = AppDataSource.getRepository(Elective);
+
+    const electives = await electiveRepository.find({
+      where: { profesor: { id: profesorId } },
+      relations: ["profesor"],
+    });
+
+    return [electives, null];
+  } catch (error) {
+    console.error("Error al obtener electivos del profesor:", error);
     return [null, "Error interno del servidor"];
   }
 }
