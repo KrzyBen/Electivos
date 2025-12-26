@@ -21,32 +21,39 @@ const Navbar = () => {
     };
 
     const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
+        setMenuOpen((prev) => !prev);
     };
 
     useEffect(() => {
         setMenuOpen(false);
     }, [location]);
 
+    const linkClass = ({ isActive }) => isActive ? 'active' : '';
+    const closeMenu = () => setMenuOpen(false);
+
     return (
         <nav className="navbar">
-            
             <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
                 <ul>
+                    <li>
+                        <NavLink to="/home" className={linkClass} onClick={closeMenu}>
+                            Inicio
+                        </NavLink>
+                    </li>
                     {userRole === 'administrador' && (
                         <>
                           <li>
-                              <NavLink to="/users" className={({ isActive }) => isActive ? 'active' : ''}>
+                              <NavLink to="/users" className={linkClass} onClick={closeMenu}>
                                   Usuarios
                               </NavLink>
                           </li>
                           <li>
-                              <NavLink to="/gestion-periodos" className={({ isActive }) => isActive ? 'active' : ''}>
+                              <NavLink to="/gestion-periodos" className={linkClass} onClick={closeMenu}>
                                   Gestionar Períodos
                               </NavLink>
                           </li>
                           <li>
-                              <NavLink to="/all/list" className={({ isActive }) => isActive ? 'active' : ''}>
+                              <NavLink to="/all/list" className={linkClass} onClick={closeMenu}>
                                   Todos los Electivos
                               </NavLink>
                           </li>
@@ -54,20 +61,20 @@ const Navbar = () => {
                     )}
                     {userRole === 'Alumno' && (
                         <li>
-                            <NavLink to="/mis-electivos" className={({ isActive }) => isActive ? 'active' : ''}>
+                            <NavLink to="/mis-electivos" className={linkClass} onClick={closeMenu}>
                                 Mis Electivos
                             </NavLink>
                         </li>
                     )}
                     {userRole === 'Profesor' && (
                         <li>
-                            <NavLink to="/electives" className={({ isActive }) => isActive ? 'active' : ''}>
+                            <NavLink to="/electives" className={linkClass} onClick={closeMenu}>
                               Mis Electivos
                             </NavLink>
                         </li>
                     )}
                     <li>
-                        <NavLink to="/auth" onClick={logoutSubmit}>
+                        <NavLink to="/auth" onClick={() => { logoutSubmit(); closeMenu(); }}>
                             Cerrar sesión
                         </NavLink>
                     </li>

@@ -3,6 +3,7 @@ import { useAuth } from '@context/AuthContext';
 import { getMyNotifications, markNotificationAsRead } from '@services/notification.service';
 import { showErrorAlert } from '@helpers/sweetAlert';
 import NotificationPopup from '@components/NotificationPopup';
+import electivosImg from "../assets/PersonIcon.svg";
 import '@styles/home.css';
 
 const Home = () => {
@@ -36,10 +37,12 @@ const Home = () => {
   const handleMarkRead = async (id) => {
     const response = await markNotificationAsRead(id);
     if (response.status === 'Success') {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-      setShowPopup((prev) => {
-        const remaining = notifications.filter((n) => n.id !== id);
-        return remaining.length > 0;
+      setNotifications((prev) => {
+        const updated = prev.filter((n) => n.id !== id);
+        if (updated.length === 0) {
+          setShowPopup(false);
+        }
+        return updated;
       });
     } else {
       showErrorAlert('Error', 'No se pudo marcar como leída la notificación.');
@@ -56,9 +59,15 @@ const Home = () => {
         />
       )}
       <main className="home-container">
-        <div className="home-content">
-          <h1>Bienvenido, {user?.nombreCompleto || 'Usuario'}</h1>
-          <p>Has iniciado sesión como: <strong>{user?.rol}</strong></p>
+        <div className="home-hero">
+          <img src={electivosImg} alt="Electivos" className="home-hero__image" />
+          <div className="home-content">
+            <h1>Bienvenido, {user?.nombreCompleto || 'Usuario'}</h1>
+            <p>Has iniciado sesión como: <strong>{user?.rol}</strong></p>
+            <p className="home-subtext">
+              Aquí podrás gestionar, inscribirte y consultar los electivos disponibles en tu carrera.
+            </p>
+          </div>
         </div>
       </main>
     </div>
