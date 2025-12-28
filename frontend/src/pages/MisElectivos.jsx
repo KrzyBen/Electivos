@@ -78,13 +78,13 @@ export default function MisElectivos() {
       },
       cellClick: async (e, cell) => {
         const row = cell.getRow().getData();
-        await onDeleteClick(row.id);
+        await onDeleteClick(row.listaId);
       }
     }
   ];
 
   const onUpdateClick = async (row) => {
-    const { id, prioridad } = row;
+    const {  listaId, prioridad } = row;
 
     const result = await Swal.fire({
       title: "Cambiar Prioridad",
@@ -100,7 +100,7 @@ export default function MisElectivos() {
 
     if (result.isConfirmed && result.value) {
       const nuevaPosicion = Number(result.value);
-      await handleUpdate(id, nuevaPosicion);
+      await handleUpdate( listaId, nuevaPosicion);
       fetchMisElectivos();
     }
   };
