@@ -10,6 +10,7 @@ import {
   getElectiveById,
   getAllElectives,
   updateElective,
+  deleteElective,
 } from "../controllers/elective.controller.js";
 
 const router = Router();
@@ -22,6 +23,7 @@ router.get("/:id", getElectiveById);
 router.put("/edit/:id", authenticateJwt, isProfessor, updateElective);
 router.post("/", authenticateJwt, isProfessor, createElective);
 
+router.delete("/:id", authenticateJwt, isJefeCarrera, deleteElective);
 router.patch("/:id/validate", authenticateJwt, isJefeCarrera, validateElective);
 
 

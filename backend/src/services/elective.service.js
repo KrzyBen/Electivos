@@ -1,6 +1,7 @@
 "use strict";
 import Elective from "../entity/elective.entity.js";
 import { AppDataSource } from "../config/configDb.js";
+import sendEmail from "../helpers/sendEmail.helper.js";
 
 export async function createElectiveService(body, profesorUser) {
   try {
@@ -137,7 +138,9 @@ export async function updateElectiveService(id, updates, profesorId) {
     electiveFound.titulo = updates.titulo;
     electiveFound.contenidos = updates.contenidos;
     electiveFound.cupoMaximo = updates.cupoMaximo;
-    electiveFound.horario = updates.horario;
+    if (updates.horario) {
+      electiveFound.horario = updates.horario;
+    }
     electiveFound.requisitos = updates.requisitos || null;
     electiveFound.updatedAt = new Date();
 
@@ -163,6 +166,49 @@ export async function getElectivesByProfesorService(profesorId) {
     return [electives, null];
   } catch (error) {
     console.error("Error al obtener electivos del profesor:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+
+
+export async function deleteElectiveService(id) {
+  try {
+    const electiveRepository = AppDataSource.getRepository(Elective);
+
+    // Buscar el electivo con la relación del profesor
+    const elective = await electiveRepository.findOne({
+      where: { id: Number(id) },
+      relations: ["profesor"],
+    });
+
+    if (!elective) {
+      return [null, "Electivo no encontrado"];
+    }
+
+    // Guardar datos del profesor antes de eliminar
+    const profesorEmail = elective.profesor?.email;
+    const tituloElectivo = elective.titulo;
+
+    // Eliminar el electivo
+    const result = await electiveRepository.delete({ id: Number(id) });
+
+    if (result.affected === 0) {
+      return [null, "Electivo no encontrado"];
+    }
+
+    // Enviar correo al profesor si tiene email
+    if (profesorEmail) {
+      await sendEmail({
+        to: profesorEmail,
+        subject: "Notificación: Electivo no será impartido",
+        text: `Estimado/a profesor/a,\n\nLe informamos que su electivo \"${tituloElectivo}\" no fue elegido para ser impartido este periodo.\n\nSaludos.`,
+      });
+    }
+
+    return [{ id }, null];
+  } catch (error) {
+    console.error("Error al eliminar electivo:", error);
     return [null, "Error interno del servidor"];
   }
 }

@@ -79,7 +79,6 @@ const Electives = () => {
               className="elective-card"
               style={{ cursor: 'pointer' }}
               onClick={e => {
-                // Evitar que el click en el botón Editar dispare el click de la card
                 if (e.target.closest('.edit-btn')) return;
                 navigate(`/electives/${electivo.id}`);
               }}

@@ -1,3 +1,4 @@
+
 "use strict";
 
 import {
@@ -8,6 +9,7 @@ import {
   getElectiveByIdService,
   getAllElectivesService,
   updateElectiveService,
+  deleteElectiveService,
 } from "../services/elective.service.js";
 
 import {
@@ -186,6 +188,31 @@ export async function getElectiveById(req, res) {
     }
 
     handleSuccess(res, 200, "Electivo encontrado", elective);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function deleteElective(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return handleErrorClient(res, 400, "El id del electivo es requerido");
+    }
+    const idNum = Number(id);
+    if (!Number.isInteger(idNum)) {
+      return handleErrorClient(
+        res,
+        400,
+        "Id inválido",
+        "El id del electivo debe ser un número entero válido"
+      );
+    }
+    const [deleted, error] = await deleteElectiveService(idNum);
+    if (error) {
+      return handleErrorClient(res, 400, "Error eliminando electivo", error);
+    }
+    handleSuccess(res, 200, "Electivo eliminado correctamente", deleted);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

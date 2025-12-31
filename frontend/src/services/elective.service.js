@@ -55,3 +55,20 @@ export const updateElective = async (id, data) => {
   );
   return response.data;
 };
+
+export const validateElective = async (id) => {
+  const response = await axios.patch(
+    `${API_URL}/${id}/validate/`,
+    {},
+    getAuthConfig()
+  );
+  return response.data;
+};
+
+export const deleteElective = async (id) => {
+  const response = await axios.delete(
+    `${API_URL}/${id}`,
+    getAuthConfig()
+  );
+  return response.data;
+};

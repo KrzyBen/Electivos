@@ -49,7 +49,7 @@ const ElectiveForm = ({ isEdit = false }) => {
       titulo: form.titulo,
       contenidos: form.contenidos,
       cupoMaximo: Number(form.cupoMaximo),
-      horario: form.horario,
+      horario: new Date(form.horario),
       requisitos: form.requisitos,
     };
 
@@ -106,10 +106,9 @@ const ElectiveForm = ({ isEdit = false }) => {
       <label>
         Horario
         <input
-          type="text"
+          type="date"
           name="horario"
-          placeholder="Ej: Lunes 10:00 - 12:00"
-          value={form.horario}
+          value={form.horario ? new Date(form.horario).toISOString().split('T')[0] : ""}
           onChange={handleChange}
           required
         />

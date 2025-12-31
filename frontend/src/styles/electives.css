@@ -1,3 +1,33 @@
+.estado-validado {
+  color: #28a745;
+  font-weight: bold;
+  padding: 0.1em 0.5em;
+  border-radius: 4px;
+  background: #e6f9ed;
+}
+.estado-no-validado {
+  color: #dc3545;
+  font-weight: bold;
+  padding: 0.1em 0.5em;
+  border-radius: 4px;
+  background: #fdeaea;
+}
+.btn-validar {
+  background: linear-gradient(90deg, #28a745 0%, #218838 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 1.2rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  box-shadow: 0 2px 8px rgba(40,167,69,0.10);
+  transition: background 0.2s, transform 0.15s;
+  margin-bottom: 0.3rem;
+}
+.btn-validar:hover {
+  background: linear-gradient(90deg, #218838 0%, #28a745 100%);
+  transform: translateY(-2px) scale(1.04);
+}
 .electives-page {
   max-width: 1100px;
   margin: 0 auto;
@@ -15,6 +45,12 @@
   margin-bottom: 2rem;
 }
 
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .elective-card {
   background: #fff;
   border-radius: 12px;
@@ -24,6 +60,7 @@
   flex-direction: column;
   justify-content: space-between;
   transition: box-shadow 0.2s;
+  margin-bottom: 0;
 }
 .elective-card:hover {
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
@@ -38,9 +75,11 @@
   color: #222;
 }
 .card-actions {
-  margin-top: 1rem;
+  margin-top: 0.1rem;
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
 }
 .card-actions .btn {
   background: #003366;
@@ -55,6 +94,21 @@
 }
 .card-actions .btn:hover {
   background: #0055a5;
+}
+.btn-eliminar {
+  background: linear-gradient(90deg, #dc3545 0%, #b52a37 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 1.2rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  box-shadow: 0 2px 8px rgba(220,53,69,0.10);
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-eliminar:hover {
+  background: linear-gradient(90deg, #b52a37 0%, #dc3545 100%);
+  transform: translateY(-2px) scale(1.04);
 }
 
 .pagination {

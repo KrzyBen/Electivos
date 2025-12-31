@@ -15,7 +15,7 @@ export default function Popup({ show, setShow, data, action }) {
         <div>
             { show && (
             <div className="bg">
-                <div className="popup">
+                <div className="popup" style={{ maxWidth: '600px', padding: '24px 18px', maxHeight: '80vh', overflowY: 'auto' }}>
                     <button className='close' onClick={() => setShow(false)}>
                         <img src={CloseIcon} />
                     </button>
@@ -58,6 +58,18 @@ export default function Popup({ show, setShow, data, action }) {
                                 pattern: patternRut,
                                 patternMessage: "Debe ser xx.xxx.xxx-x o xxxxxxxx-x",
                                 required: true,
+                            },
+                            {
+                                label: "Carrera",
+                                name: "carreraId",
+                                defaultValue: userData.carreraId || "",
+                                fieldType: 'select',
+                                options: [
+                                    { value : '', label: 'sin carrera' },
+                                    { value: '1', label: 'Ingeniería De Ejecución En Computación E Informatica'},
+                                    { value: '2', label: 'Ingeniería Civil En Informatica' },
+                                ],
+                                required: false,
                             },
                             {
                                 label: "Rol",

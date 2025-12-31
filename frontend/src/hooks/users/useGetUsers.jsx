@@ -13,6 +13,7 @@ const useUsers = () => {
                 rut: user.rut,
                 email: user.email,
                 rol: user.rol,
+                carrera: user.carrera,
                 createdAt: user.createdAt
             }));
             dataLogged(formattedData);

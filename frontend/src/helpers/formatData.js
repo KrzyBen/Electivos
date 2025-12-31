@@ -8,7 +8,8 @@ export function formatUserData(user) {
         nombreCompleto: startCase(user.nombreCompleto),
         rol: startCase(user.rol),
         rut: formatRut(user.rut),
-        createdAt: formatTempo(user.createdAt, "DD-MM-YYYY")
+        createdAt: formatTempo(user.createdAt, "DD-MM-YYYY"),
+        carrera: user.carrera || (user.carreraEntidad ? user.carreraEntidad.nombre : "")
     };
 }
 

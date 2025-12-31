@@ -2,6 +2,8 @@
 import User from "../entity/user.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
+import Carrera from "../entity/carrera.entity.js";
+
 
 export async function getUserService(query) {
   try {
@@ -10,7 +12,7 @@ export async function getUserService(query) {
     const userRepository = AppDataSource.getRepository(User);
 
     const userFound = await userRepository.findOne({
-      where: [{ id: id }, { rut: rut }, { email: email }],
+      where: [{ id: id }, { rut: rut }, { email: email }, { carrera: id }],
     });
 
     if (!userFound) return [null, "Usuario no encontrado"];
@@ -28,11 +30,16 @@ export async function getUsersService() {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-    const users = await userRepository.find();
+    // Incluir la relación carreraEntidad
+    const users = await userRepository.find({ relations: ["carreraEntidad"] });
 
     if (!users || users.length === 0) return [null, "No hay usuarios"];
 
-    const usersData = users.map(({ password, ...user }) => user);
+    // Exponer el nombre de la carrera (si existe)
+    const usersData = users.map(({ password, carreraEntidad, ...user }) => ({
+      ...user,
+      carrera: carreraEntidad ? carreraEntidad.nombre : null
+    }));
 
     return [usersData, null];
   } catch (error) {
@@ -48,33 +55,57 @@ export async function updateUserService(query, body) {
     const userRepository = AppDataSource.getRepository(User);
 
     const userFound = await userRepository.findOne({
-      where: [{ id: id }, { rut: rut }, { email: email }],
+      where: [{ id }, { rut }, { email }],
+      relations: ["carreraEntidad"],
     });
 
     if (!userFound) return [null, "Usuario no encontrado"];
 
-    const existingUser = await userRepository.findOne({
-      where: [{ rut: body.rut }, { email: body.email }],
-    });
+    if (body.rut || body.email) {
+      const existingUser = await userRepository.findOne({
+        where: [
+          body.rut ? { rut: body.rut } : {},
+          body.email ? { email: body.email } : {},
+        ],
+      });
 
-    if (existingUser && existingUser.id !== userFound.id) {
-      return [null, "Ya existe un usuario con el mismo rut o email"];
+      if (existingUser && existingUser.id !== userFound.id) {
+        return [null, "Ya existe un usuario con el mismo rut o email"];
+      }
+    }
+
+    if (body.carreraId !== undefined) {
+      if (body.carreraId === null || body.carreraId === "") {
+        userFound.carreraEntidad = null;
+      } else {
+        const carreraRepository = AppDataSource.getRepository(Carrera);
+        const carreraEntidad = await carreraRepository.findOne({
+          where: { id: body.carreraId },
+        });
+
+        if (!carreraEntidad) {
+          return [null, "Carrera no encontrada"];
+        }
+
+        userFound.carreraEntidad = carreraEntidad;
+      }
     }
 
     if (body.password) {
       const matchPassword = await comparePassword(
         body.password,
-        userFound.password,
+        userFound.password
       );
 
       if (!matchPassword) return [null, "La contraseña no coincide"];
     }
 
     const dataUserUpdate = {
-      nombreCompleto: body.nombreCompleto,
-      rut: body.rut,
-      email: body.email,
-      rol: body.rol,
+      nombreCompleto: body.nombreCompleto ?? userFound.nombreCompleto,
+      rut: body.rut ?? userFound.rut,
+      email: body.email ?? userFound.email,
+      rol: body.rol ?? userFound.rol,
+      carreraEntidad: userFound.carreraEntidad,
       updatedAt: new Date(),
     };
 
@@ -82,17 +113,26 @@ export async function updateUserService(query, body) {
       dataUserUpdate.password = await encryptPassword(body.newPassword);
     }
 
-    await userRepository.update({ id: userFound.id }, dataUserUpdate);
+    await userRepository.save({
+      ...userFound,
+      ...dataUserUpdate,
+    });
 
     const userData = await userRepository.findOne({
       where: { id: userFound.id },
+      relations: ["carreraEntidad"],
     });
 
     if (!userData) {
       return [null, "Usuario no encontrado después de actualizar"];
     }
 
-    const { password, ...userUpdated } = userData;
+    const { password, carreraEntidad, ...user } = userData;
+
+    const userUpdated = {
+      ...user,
+      carrera: carreraEntidad ? carreraEntidad.nombre : null,
+    };
 
     return [userUpdated, null];
   } catch (error) {
@@ -100,6 +140,7 @@ export async function updateUserService(query, body) {
     return [null, "Error interno del servidor"];
   }
 }
+
 
 export async function deleteUserService(query) {
   try {

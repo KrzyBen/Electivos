@@ -17,8 +17,7 @@ const CarreraSchema = new EntitySchema({
       unique: true,
     },
     codigo: {
-      type: "varchar",
-      length: 50,
+      type: "int",
       nullable: true,
     },
     createdAt: {

@@ -44,6 +44,10 @@ export const userQueryValidation = Joi.object({
       "string.max": "El rut debe tener como máximo 12 caracteres.",
       "string.pattern.base": "Formato rut inválido, debe ser xx.xxx.xxx-x o xxxxxxxx-x.",
     }),
+    carreraId: Joi.number().integer()
+    .messages({
+      "number.base": "La carrera debe ser de tipo número.",
+    }),
 })
   .or("id", "email", "rut")
   .unknown(false)
@@ -55,7 +59,7 @@ export const userQueryValidation = Joi.object({
 
 export const userBodyValidation = Joi.object({
   nombreCompleto: Joi.string()
-    .min(15)
+    .min(10)
     .max(50)
     .pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
     .messages({
@@ -124,6 +128,10 @@ export const userBodyValidation = Joi.object({
       "string.min": "El rol debe tener como mínimo 4 caracteres.",
       "string.max": "El rol debe tener como máximo 15 caracteres.",
     }),
+  carreraId: Joi.number().integer()
+    .messages({
+      "number.base": "La carrera debe ser de tipo número."
+    }),
 })
   .or(
     "nombreCompleto",
@@ -131,7 +139,8 @@ export const userBodyValidation = Joi.object({
     "password",
     "newPassword",
     "rut",
-    "rol"
+    "rol",
+    "carreraId"
   )
   .unknown(false)
   .messages({

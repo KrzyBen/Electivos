@@ -23,7 +23,7 @@ export async function getUser(req, res) {
 
     if (error) return handleErrorClient(res, 400, error.message);
 
-    const [user, errorUser] = await getUserService({ rut, id, email });
+    const [user, errorUser] = await getUserService({ rut, id, email, carrera});
 
     if (errorUser) return handleErrorClient(res, 404, errorUser);
 
@@ -53,13 +53,14 @@ export async function getUsers(req, res) {
 
 export async function updateUser(req, res) {
   try {
-    const { rut, id, email } = req.query;
+    const { rut, id, email, carreraId } = req.query;
     const { body } = req;
 
     const { error: queryError } = userQueryValidation.validate({
       rut,
       id,
       email,
+      carreraId,
     });
 
     if (queryError) {

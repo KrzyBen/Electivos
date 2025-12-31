@@ -125,7 +125,7 @@ const Users = () => {
     setIsPopupOpen,
     dataUser,
     setDataUser
-  } = useEditUser(setUsers)
+  } = useEditUser(setUsers, fetchUsers)
 
   const { handleDelete } = useDeleteUser(fetchUsers, setDataUser)
 
@@ -157,6 +157,7 @@ const Users = () => {
     { title: 'Correo electrónico', field: 'email', width: 300, responsive: 3 },
     { title: 'Rut', field: 'rut', width: 150, responsive: 2 },
     { title: 'Rol', field: 'rol', width: 200, responsive: 2 },
+    { title: 'Carrera', field: 'carrera', width: 200, responsive: 2 },
     {
       title: "Acciones",
       field: "acciones",
