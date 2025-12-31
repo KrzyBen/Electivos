@@ -44,6 +44,14 @@ const ElectiveSchema = new EntitySchema({
       type: "date",
       nullable: false,
     },
+    horaInicio: {
+      type: "time",
+      nullable: false,
+    },
+    horaFinal: {
+      type: "time",
+      nullable: false,
+    },
     requisitos: {
       type: "text",
       nullable: true,

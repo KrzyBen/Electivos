@@ -1,14 +1,20 @@
 "use strict";
 import Joi from "joi";
 
+
 export const electiveValidation = Joi.object({
   titulo: Joi.string().min(5).max(255).required(),
   contenidos: Joi.string().min(10).required(),
-
   cupoMaximo: Joi.number().integer().min(1).max(40).required(),
-
   horario: Joi.string().min(5).max(255).required(),
-
+  horaInicio: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).required().messages({
+    "string.pattern.base": "El formato de horaInicio debe ser HH:mm (24h)",
+    "any.required": "La hora de inicio es obligatoria."
+  }),
+  horaFinal: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).required().messages({
+    "string.pattern.base": "El formato de horaFinal debe ser HH:mm (24h)",
+    "any.required": "La hora final es obligatoria."
+  }),
   requisitos: Joi.string().allow(null, "").max(2000),
 }).unknown(false);
 
@@ -31,6 +37,14 @@ export const electiveUpdateValidation = Joi.object({
   horario: Joi.string().min(5).max(255).required().messages({
     "string.empty": "El horario no puede estar vacío.",
     "any.required": "El horario es obligatorio.",
+  }),
+  horaInicio: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).required().messages({
+    "string.pattern.base": "El formato de horaInicio debe ser HH:mm (24h)",
+    "any.required": "La hora de inicio es obligatoria."
+  }),
+  horaFinal: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).required().messages({
+    "string.pattern.base": "El formato de horaFinal debe ser HH:mm (24h)",
+    "any.required": "La hora final es obligatoria."
   }),
   requisitos: Joi.string().allow(null, "").max(2000).messages({
     "string.max": "Los requisitos pueden tener hasta 2000 caracteres.",

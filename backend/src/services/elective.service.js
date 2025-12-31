@@ -15,13 +15,12 @@ export async function createElectiveService(body, profesorUser) {
       titulo: body.titulo,
       contenidos: body.contenidos,
       cupoMaximo: body.cupoMaximo,
-
-      // nuevos campos
       cupoDisponible: body.cupoMaximo,
       cupoMaximoCarrera: 10,
       cupoDisponibleCarrera: 10,
-
       horario: body.horario,
+      horaInicio: body.horaInicio,
+      horaFinal: body.horaFinal,
       requisitos: body.requisitos || null,
       profesor: profesorUser,
       validado: false,
@@ -140,6 +139,12 @@ export async function updateElectiveService(id, updates, profesorId) {
     electiveFound.cupoMaximo = updates.cupoMaximo;
     if (updates.horario) {
       electiveFound.horario = updates.horario;
+    }
+    if (updates.horaInicio) {
+      electiveFound.horaInicio = updates.horaInicio;
+    }
+    if (updates.horaFinal) {
+      electiveFound.horaFinal = updates.horaFinal;
     }
     electiveFound.requisitos = updates.requisitos || null;
     electiveFound.updatedAt = new Date();

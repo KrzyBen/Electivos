@@ -12,6 +12,8 @@ const defaultValues = {
   contenidos: "",
   cupoMaximo: 40,
   horario: "",
+  horaInicio: "",
+  horaFinal: "",
   requisitos: "",
 };
 
@@ -49,7 +51,9 @@ const ElectiveForm = ({ isEdit = false }) => {
       titulo: form.titulo,
       contenidos: form.contenidos,
       cupoMaximo: Number(form.cupoMaximo),
-      horario: new Date(form.horario),
+      horario: form.horario,
+      horaInicio: form.horaInicio,
+      horaFinal: form.horaFinal,
       requisitos: form.requisitos,
     };
 
@@ -103,12 +107,35 @@ const ElectiveForm = ({ isEdit = false }) => {
         />
       </label>
 
+
       <label>
-        Horario
+        Horario (fecha)
         <input
           type="date"
           name="horario"
           value={form.horario ? new Date(form.horario).toISOString().split('T')[0] : ""}
+          onChange={handleChange}
+          required
+        />
+      </label>
+
+      <label>
+        Hora de inicio
+        <input
+          type="time"
+          name="horaInicio"
+          value={form.horaInicio}
+          onChange={handleChange}
+          required
+        />
+      </label>
+
+      <label>
+        Hora final
+        <input
+          type="time"
+          name="horaFinal"
+          value={form.horaFinal}
           onChange={handleChange}
           required
         />
