@@ -58,3 +58,28 @@
         margin: 0;
     }
 }
+
+.al-center-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 60vh;
+}
+
+.centered-title {
+    margin-left: 0 !important;
+    margin-bottom: 20px;
+}
+
+.al-alert-info {
+    background-color: #f0f6ff;
+    border: 1px solid #c2d9ff;
+    color: #003366;
+    padding: 20px 30px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}  

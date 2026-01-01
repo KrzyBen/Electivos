@@ -1,10 +1,12 @@
 // src/components/PopupAddElectivo.jsx
 import { useState } from "react";
 import "@styles/al-popup.css";
+import { formatHorario } from "@helpers/horarioFormat.helper";
+
 
 export default function PopupAddElectivo({ electivosDisponibles = [], onSubmit, onClose }) {
   const [selected, setSelected] = useState(null);
-  const [prioridad, setPrioridad] = useState("");
+  const [prioridad, setPrioridad] = useState("1");
 
   return (
     <div className="al-popup-overlay" role="dialog" aria-modal="true">
@@ -29,7 +31,7 @@ export default function PopupAddElectivo({ electivosDisponibles = [], onSubmit, 
               >
                 <h3>{e.titulo}</h3>
                 <p><strong>Profesor:</strong> {e.profesor?.nombreCompleto || "—"}</p>
-                <p><strong>Horario:</strong> {e.horario || "—"}</p>
+                <p><strong>Horario:</strong> {formatHorario(e)}</p>
                 <p><strong>Cupos:</strong> {e.cupoDisponible}/{e.cupoMaximo}</p>
               </div>
             ))}

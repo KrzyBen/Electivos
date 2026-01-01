@@ -1,6 +1,8 @@
 // src/components/PopupReplaceElectivo.jsx
 import { useState } from "react";
 import "@styles/al-popup.css";
+import { formatHorario } from "@helpers/horarioFormat.helper";
+
 
 export default function PopupReplaceElectivo({
   electivosDisponibles = [],
@@ -28,7 +30,7 @@ export default function PopupReplaceElectivo({
           }}
         >
           <p><strong>Electivo actual:</strong> {oldElectivo?.nombre || "—"}</p>
-          <p><strong>Horario:</strong> {oldElectivo?.horario || "—"}</p>
+          <p><strong>Horario:</strong> {formatHorario(oldElectivo?.electivo)}</p>
         </div>
 
         {/* LISTA DE ELECTIVOS DISPONIBLES */}
@@ -48,7 +50,7 @@ export default function PopupReplaceElectivo({
               >
                 <h3>{e.titulo}</h3>
                 <p><strong>Profesor:</strong> {e.profesor?.nombreCompleto || "—"}</p>
-                <p><strong>Horario:</strong> {e.horario || "—"}</p>
+                <p><strong>Horario:</strong> {formatHorario(e)}</p>
                 <p><strong>Cupos:</strong> {e.cupoDisponible}/{e.cupoMaximo}</p>
               </div>
             ))}

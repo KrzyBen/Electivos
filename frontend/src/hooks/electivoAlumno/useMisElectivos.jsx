@@ -1,6 +1,8 @@
 // src/hooks/electivoAlumno/useMisElectivos.jsx
 import { useState, useEffect, useCallback } from "react";
 import { getMisElectivos } from "@services/electivoLista.service";
+import { formatHorario } from "@helpers/horarioFormat.helper";
+
 
 export default function useMisElectivos() {
   const [misElectivos, setMisElectivos] = useState([]);
@@ -22,13 +24,12 @@ export default function useMisElectivos() {
         estado: item.estado,
         electivoId: item.electivo?.id,
         nombre: item.electivo?.titulo,
-        horario: item.electivo?.horario,
+        horario: formatHorario(item.electivo),
         profesor: item.electivo?.profesor?.nombreCompleto ?? "—",
         cupoMaximo: item.electivo?.cupoMaximo,
         cupoDisponible: item.electivo?.cupoDisponible,
         electivo: item.electivo,
       }));
-
 
       setMisElectivos(items);
     } catch (err) {

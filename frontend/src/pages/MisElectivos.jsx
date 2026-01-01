@@ -7,6 +7,7 @@ import useDeleteElectivo from "@hooks/electivoAlumno/useDeleteElectivo";
 import useUpdateElectivo from "@hooks/electivoAlumno/useUpdateElectivo";
 import useReplaceElectivo from "@hooks/electivoAlumno/useReplaceElectivo";
 import useEnviarLista from "@hooks/electivoAlumno/useEnviarLista";
+import useActiveRegistrationPeriod from "@hooks/electivoAlumno/useActiveRegistrationPeriod";
 // Componentes
 import PopupReplaceElectivo from "@components/PopupReplaceElectivo";
 import PopupAddElectivo from "@components/PopupAddElectivo";
@@ -35,6 +36,7 @@ export default function MisElectivos() {
   const [showReplace, setShowReplace] = useState(false);
   const [selectedOldElectivo, setSelectedOldElectivo] = useState(null);
   const { handleReplace } = useReplaceElectivo(fetchMisElectivos);
+  const { isActive, loading } = useActiveRegistrationPeriod();
 
 
   const columns = [
@@ -122,6 +124,28 @@ export default function MisElectivos() {
       fetchMisElectivos();
     }
   };
+
+  if (loading) {
+    return (
+      <div className="al-main-container">
+        <p>Cargando período de inscripción...</p>
+      </div>
+    );
+  }
+
+  if (!isActive) {
+    return (
+      <div className="al-table-container al-center-message">
+        <h1 className="al-title-table centered-title">Mis Electivos</h1>
+
+        <div className="al-alert-info">
+          El período de inscripción no está activo.
+          <br />
+          No puedes modificar tu lista en este momento.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="al-main-container">

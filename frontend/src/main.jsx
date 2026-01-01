@@ -19,6 +19,8 @@ import Electives from '@pages/Electives';
 import ElectiveForm from '@components/ElectiveForm';
 import ElectiveDetail from '@pages/ElectiveDetail';
 import JefeCarreraElectives from '@pages/JefeCarreraElectives';
+import JefeCarreraElectivesGestion from '@pages/JefeCarreraElectivesGestion';
+
 
 const router = createBrowserRouter([
   {
@@ -71,6 +73,14 @@ const router = createBrowserRouter([
           element: (
             <ProtectedRoute allowedRoles={["Profesor"]}>
               <ElectiveForm isEdit={false}/>
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: '/alumno/lista',
+          element: (
+            <ProtectedRoute allowedRoles={["administrador"]}>
+              <JefeCarreraElectivesGestion />
             </ProtectedRoute>
           )
         },

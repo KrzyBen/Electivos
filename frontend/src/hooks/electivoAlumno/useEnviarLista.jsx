@@ -21,7 +21,7 @@ export default function useEnviarLista(fetchMisElectivos) {
       }
 
     } catch (error) {
-      console.error("❌ Error en handleEnviar:", error);
+      console.error("Error en handleEnviar:", error);
       showErrorAlert("Error al enviar", error.message || "Error inesperado.");
     }
   };

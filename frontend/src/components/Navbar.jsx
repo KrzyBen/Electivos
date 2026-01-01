@@ -57,6 +57,11 @@ const Navbar = () => {
                                   Todos los Electivos
                               </NavLink>
                           </li>
+                          <li>
+                                <NavLink to="/alumno/lista" className={linkClass}>
+                                    Gestión Electivos
+                                </NavLink>
+                          </li>
                         </>
                     )}
                     {userRole === 'Alumno' && (

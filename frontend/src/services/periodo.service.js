@@ -26,3 +26,15 @@ export async function addElectivesToPeriod(periodId, electiveIds) {
     return error.response.data;
   }
 }
+
+export async function getActivePeriod() {
+  try {
+    const { data, status } = await axios.get("/registration-period/active");
+    return { data, status };
+  } catch (error) {
+    return {
+      data: error.response?.data,
+      status: error.response?.status || 500
+    };
+  }
+}

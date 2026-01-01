@@ -14,8 +14,8 @@ async function createUsers() {
 
     // Crear carreras si no existen
     const carrerasData = [
-      { nombre: "IECI", codigo: "22031" },
-      { nombre: "ICINF", codigo: "22032" },
+      { nombre: "IECI", codigo: 22031 },
+      { nombre: "ICINF", codigo: 22032 },
     ];
 
     const carreraIdMap = {};

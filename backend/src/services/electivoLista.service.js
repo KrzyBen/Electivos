@@ -4,6 +4,8 @@ import { AppDataSource } from "../config/configDb.js";
 import ElectivoLista from "../entity/electivoLista.entity.js";
 import Elective from "../entity/elective.entity.js";
 import User from "../entity/user.entity.js";
+import { hayConflictoHorario } from "../helpers/horario.helper.js";
+
 
 export async function createElectivoListaService(userId, body) {
   try {
@@ -77,26 +79,29 @@ export async function createElectivoListaService(userId, body) {
       return [null, "Tu lista ya fue enviada. No puedes agregar más electivos."];
     }
 
-    const conflicting = currentElectives.find(
-      (item) => item.electivo.horario === electiveFound.horario
+    const conflicting = currentElectives.find(item =>
+      hayConflictoHorario(item.electivo, electiveFound)
     );
 
     if (conflicting) {
       return [
         null,
         {
-          message:
-            "Conflicto de horario detectado. No puedes inscribir dos electivos con el mismo horario.",
+          message: "Conflicto de horario detectado. No puedes inscribir dos electivos con el mismo horario.",
           conflicto: {
             actual: {
               id: conflicting.electivo.id,
               titulo: conflicting.electivo.titulo,
               horario: conflicting.electivo.horario,
+              horaInicio: conflicting.electivo.horaInicio,
+              horaFinal: conflicting.electivo.horaFinal,
             },
             nuevo: {
               id: electiveFound.id,
               titulo: electiveFound.titulo,
               horario: electiveFound.horario,
+              horaInicio: electiveFound.horaInicio,
+              horaFinal: electiveFound.horaFinal,
             },
           },
         },
@@ -400,10 +405,9 @@ export async function replaceElectivoListaService(userId, body) {
       relations: ["electivo"],
     });
 
-    const horarioConflict = otherElectives.find(
-      (item) =>
-        item.electivo.id !== oldElectivoId &&
-        item.electivo.horario === newElectivo.horario
+    const horarioConflict = otherElectives.find(item =>
+      item.electivo.id !== oldElectivoId &&
+      hayConflictoHorario(item.electivo, newElectivo)
     );
 
     if (horarioConflict) {
