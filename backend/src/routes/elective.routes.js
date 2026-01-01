@@ -1,5 +1,6 @@
 "use strict";
 import { Router } from "express";
+import { exportInscritosPDF } from "../controllers/elective.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { isProfessor } from "../middlewares/isProfessor.middleware.js";
 import { isJefeCarrera } from "../middlewares/isJefeCarrera.middleware.js";
@@ -17,6 +18,7 @@ const router = Router();
 
 
 router.get("/creados", authenticateJwt, isProfessor, getElectives);
+router.get("/:id/export-inscritos-pdf", authenticateJwt, isProfessor, exportInscritosPDF);
 router.get("/all/list", authenticateJwt, isJefeCarrera, getAllElectives);
 router.get("/", authenticateJwt, getElectives);
 router.get("/:id", getElectiveById);

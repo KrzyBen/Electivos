@@ -1,6 +1,9 @@
-
 "use strict";
 
+import PDFDocument from 'pdfkit';
+import ElectivoLista from '../entity/electivoLista.entity.js';
+import User from '../entity/user.entity.js';
+import { AppDataSource } from "../config/configDb.js";
 import {
   createElectiveService,
   getAvailableElectivesService,
@@ -215,5 +218,71 @@ export async function deleteElective(req, res) {
     handleSuccess(res, 200, "Electivo eliminado correctamente", deleted);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
+  }
+}
+
+export async function exportInscritosPDF(req, res) {
+  try {
+    const electivoId = Number(req.params.id);
+
+    const electivoListaRepository =
+      AppDataSource.getRepository(ElectivoLista);
+
+    const inscritos = await electivoListaRepository.find({
+      where: {
+        electivo: { id: electivoId },
+      },
+      relations: ["alumno"],
+      order: {
+        alumno: { nombreCompleto: "ASC" },
+      },
+    });
+
+    if (!inscritos.length) {
+      return res
+        .status(404)
+        .json({ message: "No hay alumnos inscritos en este electivo." });
+    }
+
+    // PDF
+    const doc = new PDFDocument({ margin: 40, size: "A4" });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="inscritos_electivo_${electivoId}.pdf"`
+    );
+
+    doc.pipe(res);
+
+    doc.fontSize(18).text("Lista de Alumnos Inscritos", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(14).text(`Electivo ID: ${electivoId}`);
+    doc.moveDown();
+
+    // Cabecera
+    doc.fontSize(12)
+      .text("N°", 50, doc.y, { continued: true })
+      .text("Nombre", 90, doc.y, { continued: true })
+      .text("RUT", 250, doc.y, { continued: true })
+      .text("Email", 350, doc.y);
+
+    doc.moveDown(0.5);
+    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+
+    inscritos.forEach((item, index) => {
+      const alumno = item.alumno;
+      doc
+        .text(`${index + 1}`, 50, doc.y, { continued: true })
+        .text(alumno?.nombreCompleto ?? "", 90, doc.y, { continued: true })
+        .text(alumno?.rut ?? "", 250, doc.y, { continued: true })
+        .text(alumno?.email ?? "", 350, doc.y);
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error("Error exportando PDF:", error);
+    return res
+      .status(500)
+      .json({ message: "Error al exportar inscritos en PDF." });
   }
 }
