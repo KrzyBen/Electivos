@@ -9,8 +9,6 @@ export default function ElectivoAprobadoCard({ item }) {
         <p className="aea-electivo-text"><strong>Horario:</strong> {new Date(electivo.horario).toLocaleDateString()}</p>
         <p className="aea-electivo-text"><strong>Hora:</strong> {electivo.horaInicio} – {electivo.horaFinal}</p>
       </div>
-
-      <p className="estado-aprobado">Electivo aprobado</p>
     </div>
   );
 }

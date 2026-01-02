@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { AppDataSource } from "../config/configDb.js";
 import ElectivoAprobado from "../entity/electivoAprobado.entity.js";
+import formatDayOfWeek from "../helpers/dia.helper.js";
 
 export async function generarPDFListaAprobada(alumnoId, outputPath) {
   try {
@@ -86,7 +87,7 @@ export async function generarPDFListaAprobada(alumnoId, outputPath) {
     const heights = [
         doc.heightOfString(electivo.titulo, columns.titulo),
         doc.heightOfString(electivo.contenidos, columns.contenido),
-        doc.heightOfString(formatDate(electivo.horario), columns.horario),
+        doc.heightOfString(formatDayOfWeek(electivo.horario), columns.horario),
         doc.heightOfString(electivo.horaInicio, columns.inicio),
         doc.heightOfString(electivo.horaFinal, columns.final),
     ];
@@ -101,7 +102,7 @@ export async function generarPDFListaAprobada(alumnoId, outputPath) {
 
     doc.text(electivo.titulo, columns.titulo.x, y, { width: columns.titulo.width });
     doc.text(electivo.contenidos, columns.contenido.x, y, { width: columns.contenido.width });
-    doc.text(formatDate(electivo.horario), columns.horario.x, y, { width: columns.horario.width });
+    doc.text(formatDayOfWeek(electivo.horario), columns.horario.x, y, { width: columns.horario.width });
     doc.text(electivo.horaInicio, columns.inicio.x, y, { width: columns.inicio.width });
     doc.text(electivo.horaFinal, columns.final.x, y, { width: columns.final.width });
 
