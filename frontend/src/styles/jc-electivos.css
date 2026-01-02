@@ -1,30 +1,42 @@
+/* Contenedor principal */
 .jc-container {
   padding: 2rem;
-  margin-top: 9vh; /* 👈 evita que el navbar tape contenido */
+  margin-top: 9vh;
   background: #f5f7fa;
   min-height: 100vh;
 }
 
+/* Título principal */
 .jc-title {
   font-size: 1.8rem;
   margin-bottom: 1rem;
   color: #002651;
 }
 
-/* Tarjetas alumnos */
+/* =========================================
+   Tarjetas alumnos (Cardboard style)
+========================================= */
 .jc-alumnos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2rem; /* aumento del gap horizontal y vertical */
+  justify-items: center; /* centra las tarjetas */
 }
 
 .jc-alumno-card {
-  background: white;
-  border-radius: 10px;
+  background: #fff;
+  border-radius: 12px;
+  border-left: 6px solid #2563eb;
   padding: 1rem;
+  width: 100%;
+  max-width: 250px; /* limitar ancho de la tarjeta */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .jc-alumno-card:hover {
@@ -32,15 +44,81 @@
   box-shadow: 0 6px 16px rgba(0,0,0,0.12);
 }
 
-/* Tarjetas electivos */
-.jc-electivo-card {
-  background: white;
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 10px;
-  border-left: 6px solid #006edf;
+/* =========================================
+   Sección Electivos del Alumno
+========================================= */
+.jc-lista {
+  margin-top: 2rem;
 }
 
+.jc-lista-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* exactamente 4 columnas en desktop */
+  gap: 3rem; /* espacio horizontal y vertical entre tarjetas */
+  margin-top: 1rem;
+}
+
+.jc-lista h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #002651;
+  text-align: center;
+}
+
+/* Botón aprobar lista alumno debajo del título */
+.jc-btn-aprobar-lista {
+  display: block;
+  margin: 0.5rem auto 1rem auto;
+  padding: 0.5rem 1rem;
+  background: #15803d;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.jc-btn-aprobar-lista:hover {
+  background: #166534;
+  transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* =========================================
+   Tarjetas electivos más compactas
+========================================= */
+.jc-electivo-card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  border-left: 6px solid #2563eb;
+  width: 100%; /* ocupa todo el ancho disponible en la columna */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.jc-electivo-title {
+  font-size: 1.05rem;
+  color: #003366;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.jc-electivo-section {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.jc-electivo-text {
+  font-size: 0.95rem;
+  color: #353535;
+  margin: 0;
+}
+
+/* Botones dentro de la tarjeta siguen igual */
 .jc-btn-group {
   display: flex;
   gap: 0.5rem;
@@ -55,53 +133,30 @@
   font-weight: bold;
 }
 
-.jc-btn-approve {
-  background: #16a34a;
-  color: white;
-}
+.jc-btn-approve { background: #16a34a; color: white; }
+.jc-btn-reject { background: #dc2626; color: white; }
+.jc-btn-replace { background: #2563eb; color: white; }
+.jc-btn-replace:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+.jc-btn-approve:hover { background: #15803d; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12);}
+.jc-btn-reject:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12);}
 
-.jc-btn-reject {
-  background: #dc2626;
-  color: white;
-}
-
-.jc-btn-replace {
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  background: #2563eb; /* azul */
-  color: white;
-}
-
-.jc-btn-replace:hover {
-  background: #1d4ed8;
-}
-
-
-.jc-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.jc-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* Estado visual */
 .estado-aprobado { color: #16a34a; font-weight: bold; }
 .estado-rechazado { color: #dc2626; font-weight: bold; }
 .estado-guardado { color: #f59e0b; font-weight: bold; }
+.estado-enviado { color: #2563eb; font-weight: bold; }
 
-/* jc-electivos.css */
-
-.jc-electivo-section {
-  margin-top: 0.5rem;
+/* Responsivo */
+@media (max-width: 1024px) {
+  .jc-lista-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.jc-electivo-text {
-  margin: 0.25rem 0 0;
-  font-size: 0.9rem;
-  color: #353535;
-}
-
-.jc-electivo-title {
-  margin-bottom: 0.25rem;
+@media (max-width: 767px) {
+  .jc-lista-grid {
+    grid-template-columns: 1fr;
+  }
 }

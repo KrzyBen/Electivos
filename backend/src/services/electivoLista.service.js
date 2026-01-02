@@ -48,6 +48,15 @@ export async function createElectivoListaService(userId, body) {
       ];
     }
 
+    // ---- Verificar si la lista ya fue aprobada ----
+    const electivoAprobadoRepository = AppDataSource.getRepository(ElectivoAprobado);
+    const listaAprobada = await electivoAprobadoRepository.findOne({
+      where: { alumno: { id: userId } },
+    });
+    if (listaAprobada) {
+      return [null, "Tu lista ya fue aprobada. No puedes agregar más electivos."];
+    }
+
     // Evitar duplicados
     const alreadyExists = await electivoListaRepository.findOne({
       where: {
@@ -446,6 +455,15 @@ export async function replaceElectivoListaService(userId, body) {
 export async function enviarListaService(userId) {
   try {
     const electivoListaRepository = AppDataSource.getRepository(ElectivoLista);
+    const electivoAprobadoRepository = AppDataSource.getRepository(ElectivoAprobado);
+
+    // ---- Validar si ya hay lista aprobada ----
+    const listaDefinitiva = await electivoAprobadoRepository.findOne({
+      where: { alumno: { id: userId } },
+    });
+    if (listaDefinitiva) {
+      return [null, "Tu lista ya fue aprobada. No puedes enviar más electivos."];
+    }
 
     // Obtener items del usuario
     const items = await electivoListaRepository.find({

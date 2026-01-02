@@ -1,0 +1,136 @@
+/* =========================================
+   Contenedor principal
+========================================= */
+.aea-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 4rem 1rem 2rem;
+    background-color: #f7f9fc;
+    font-family: 'Inter', sans-serif;
+}
+
+/* =========================================
+   Título de la página
+========================================= */
+.aea-title {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #003366;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* =========================================
+   Botón volver
+========================================= */
+.aea-btn-volver {
+    margin-bottom: 1rem;
+    background: linear-gradient(90deg, #0055a5 0%, #003366 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.3rem;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,85,165,0.10);
+    transition: all 0.2s ease-in-out;
+}
+
+.aea-btn-volver:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,85,165,0.15);
+}
+
+/* =========================================
+   Grid de horario semanal
+========================================= */
+.aea-horario-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* hasta 4 columnas */
+    gap: 16px 24px;
+    width: 100%;
+    max-width: 1400px;
+}
+
+@media (max-width: 1024px) {
+    .aea-horario-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .aea-horario-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+/* =========================================
+   Día de la semana
+========================================= */
+.aea-horario-dia {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.aea-horario-dia h4 {
+    margin-bottom: 0.5rem;
+    color: #003366;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* =========================================
+   Tarjeta de electivo aprobado
+========================================= */
+.aea-electivo-card {
+    background: #fff;
+    padding: 0.8rem;
+    border-radius: 10px;
+    border-left: 6px solid #28a745; /* verde para aprobado */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.aea-electivo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.aea-electivo-title {
+    font-size: 1rem;
+    color: #003366;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.aea-electivo-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.aea-electivo-text {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.estado-aprobado {
+    font-weight: 600;
+    color: #16a34a;
+    text-align: center;
+    margin-top: 0.5rem;
+}

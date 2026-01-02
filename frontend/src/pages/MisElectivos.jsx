@@ -11,113 +11,57 @@ import useActiveRegistrationPeriod from "@hooks/electivoAlumno/useActiveRegistra
 // Componentes
 import PopupReplaceElectivo from "@components/PopupReplaceElectivo";
 import PopupAddElectivo from "@components/PopupAddElectivo";
-import Table from "@components/Table";
+import ElectivoCardBoard from "@components/ElectivoCardBoard";
 
 import "@styles/al-mis-electivos.css";
 
 import { deleteDataAlert } from "@helpers/sweetAlert";
 import Swal from "sweetalert2";
-
-// Ícono delete
-import deleteIcon from "@assets/deleteIcon.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function MisElectivos() {
+  const navigate = useNavigate();
+
   const { misElectivos, fetchMisElectivos } = useMisElectivos();
   const { electivos, fetchElectivos } = useElectivosDisponibles();
   const { handleAdd } = useAddElectivo(fetchMisElectivos);
   const { handleUpdate } = useUpdateElectivo(fetchMisElectivos);
-
   const { handleDelete } = useDeleteElectivo(fetchMisElectivos);
-
   const { handleEnviar } = useEnviarLista(fetchMisElectivos);
-
-  const [showAdd, setShowAdd] = useState(false);
-
-  const [showReplace, setShowReplace] = useState(false);
-  const [selectedOldElectivo, setSelectedOldElectivo] = useState(null);
   const { handleReplace } = useReplaceElectivo(fetchMisElectivos);
   const { isActive, loading } = useActiveRegistrationPeriod();
 
+  const [showAdd, setShowAdd] = useState(false);
+  const [showReplace, setShowReplace] = useState(false);
+  const [selectedOldElectivo, setSelectedOldElectivo] = useState(null);
 
-  const columns = [
-    { title: "Posición", field: "prioridad" },
-    { title: "Electivo", field: "nombre" },
-    { title: "Horario", field: "horario" },
-    { title: "Estado", field: "estado" },
-    {
-      title: "Editar Prioridad",
-      field: "editar_prioridad",
-      hozAlign: "center",
-      headerSort: false,
-      formatter: () => {
-        return `<button class="al-btn-edit" style="padding:4px 8px; cursor:pointer;">Editar</button>`;
-      },
-      cellClick: async (e, cell) => {
-        const row = cell.getRow().getData();
-        await onUpdateClick(row);  
-      }
-    },
-    {
-      title: "Reemplazar",
-      field: "reemplazar",
-      hozAlign: "center",
-      headerSort: false,
-      formatter: () => {
-        return `<button class="al-btn-edit" style="padding:4px 8px; cursor:pointer;">Reemplazar</button>`;
-      },
-      cellClick: async (e, cell) => {
-        const row = cell.getRow().getData();
-        await onReplaceClick(row);
-      }
-    },
-    {
-      title: "Eliminar",
-      field: "acciones",
-      hozAlign: "center",
-      headerSort: false,
-      formatter: () => {
-        return `<img src="${deleteIcon}" alt="delete" style="width:22px; cursor:pointer;" />`;
-      },
-      cellClick: async (e, cell) => {
-        const row = cell.getRow().getData();
-        await onDeleteClick(row.listaId);
-      }
-    }
-  ];
-
-  const onUpdateClick = async (row) => {
-    const {  listaId, prioridad } = row;
-
+  // Funciones de acciones
+  const onUpdateClick = async (listaId, prioridad) => {
     const result = await Swal.fire({
       title: "Cambiar Prioridad",
       text: "Ingresa la nueva posición del electivo",
       input: "number",
       inputValue: prioridad,
-      inputAttributes: {
-        min: 1
-      },
+      inputAttributes: { min: 1 },
       showCancelButton: true,
-      confirmButtonText: "Actualizar"
+      confirmButtonText: "Actualizar",
     });
 
     if (result.isConfirmed && result.value) {
       const nuevaPosicion = Number(result.value);
-      await handleUpdate( listaId, nuevaPosicion);
+      await handleUpdate(listaId, nuevaPosicion);
       fetchMisElectivos();
     }
   };
 
   const onReplaceClick = async (row) => {
-    console.log("Replacing electivo:", row);
     setSelectedOldElectivo(row);
     await fetchElectivos();
     setShowReplace(true);
   };
 
-
   const onDeleteClick = async (id) => {
     const result = await deleteDataAlert();
-
     if (result.isConfirmed) {
       await handleDelete(id);
       Swal.fire("Eliminado", "El electivo ha sido eliminado.", "success");
@@ -137,7 +81,6 @@ export default function MisElectivos() {
     return (
       <div className="al-table-container al-center-message">
         <h1 className="al-title-table centered-title">Mis Electivos</h1>
-
         <div className="al-alert-info">
           El período de inscripción no está activo.
           <br />
@@ -149,39 +92,52 @@ export default function MisElectivos() {
 
   return (
     <div className="al-main-container">
-      <div className="al-table-container">
-        <h1 className="al-title-table">Mis Electivos</h1>
+      <h1 className="al-title-table centered-title">Mis Electivos</h1> {/* Título agregado */}
+      {/* Botones de acción */}
+      <div className="al-actions">
+        <button
+          onClick={() => {
+            fetchElectivos();
+            setShowAdd(true);
+          }}
+          className="al-btn-action al-btn-add"
+        >
+          Añadir Electivo
+        </button>
 
-        <div className="al-actions">
-          <button
-            onClick={() => {
-              fetchElectivos();
-              setShowAdd(true);
-            }}
-            className="al-btn-replace"
-          >
-            Añadir Electivo
-          </button>
+        <button
+          onClick={handleEnviar}
+          className="al-btn-action al-btn-send"
+        >
+          Enviar Lista
+        </button>
 
-          <button
-            onClick={handleEnviar}
-            className="al-btn-confirm"
-            style={{ marginLeft: "10px" }}
-          >
-            Enviar Lista
-          </button>
-        </div>
-
-        <Table
-          data={misElectivos}
-          columns={columns}
-          onSelectionChange={() => {}}
-          dataToFilter="nombre"
-          initialSortName="prioridad"
-        />
-
+        <button
+          onClick={() => navigate("/electivos-aprobados")}
+          className="al-btn-action al-btn-go"
+        >
+          Ir a Mis Electivos Aprobados
+        </button>
       </div>
 
+      {/* Lista de electivos */}
+      {misElectivos.length === 0 ? (
+        <p>No tienes electivos agregados actualmente.</p>
+      ) : (
+        <div className="al-cardboard-grid">
+          {misElectivos.map((item) => (
+            <ElectivoCardBoard
+              key={item.listaId}
+              item={item}
+              onUpdate={() => onUpdateClick(item.listaId, item.prioridad)}
+              onReplace={() => onReplaceClick(item)}
+              onDelete={() => onDeleteClick(item.listaId)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Popups */}
       {showAdd && (
         <PopupAddElectivo
           electivosDisponibles={electivos}

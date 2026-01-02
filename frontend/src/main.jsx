@@ -13,6 +13,8 @@ import '@styles/styles.css';
 import MisElectivos from '@pages/MisElectivos';
 import GestionPeriodos from '@pages/GestionPeriodos';
 import InscripcionEspecial from '@pages/InscripcionEspecial';
+import ElectivosAprobados from "@pages/MisElectivosAprobados";
+
 
 // Electivos
 import Electives from '@pages/Electives';
@@ -95,6 +97,14 @@ const router = createBrowserRouter([
         {
           path: '/electives/:id',
           element: <ElectiveDetail/>
+        },
+        {
+          path: "/electivos-aprobados",
+          element: (
+            <ProtectedRoute allowedRoles={["Alumno"]}>
+              <ElectivosAprobados />
+            </ProtectedRoute>
+          )
         }
     ]
   },

@@ -12,6 +12,8 @@ import {
   enviarElectivoLista,
 } from "../controllers/electivoLista.controller.js";
 
+import { getMisElectivosAprobados } from "../controllers/electivoAprobado.controller.js";
+
 // Middlewares
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { isAlumno } from "../middlewares/authorization.middleware.js";
@@ -30,5 +32,7 @@ router.get("/validados", authenticateJwt, isAlumno, getElectivesValidados);
 router.post("/replace", authenticateJwt, isAlumno, checkPeriodoInscripcion,replaceElectivoLista);
 router.post("/enviar", authenticateJwt, isAlumno, checkPeriodoInscripcion, enviarElectivoLista);
 
+//ruta de electivo aprobado
+router.get("/electivos-aprobados", authenticateJwt, isAlumno, getMisElectivosAprobados);
 
 export default router;

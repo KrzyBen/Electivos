@@ -82,7 +82,7 @@ export default function JcElectivoCard({
         </button>
 
         <button
-          className="jc-btn-replace"
+          className="jc-btn jc-btn-replace"
           onClick={() => onReplace(item)}
         >
           Cambiar electivo

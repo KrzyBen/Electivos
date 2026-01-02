@@ -58,3 +58,13 @@ export async function getElectivosCarreraJefe() {
     return error.response?.data;
   }
 }
+
+export async function aprobarListaElectivos(alumnoId) {
+  try {
+    console.log("Aprobar lista para alumnoId:", alumnoId);
+    const { data } = await axios.post(`/jc_electivos/${alumnoId}/aprobar`);
+    return data;
+  } catch (error) {
+    return error.response?.data;
+  }
+}

@@ -1,85 +1,184 @@
+/* =========================================
+   Contenedor principal
+========================================= */
 .al-main-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-}
-
-.al-table-container {
-    width: 90%;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.al-top-table {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
     width: 100%;
+    min-height: 100vh;
+    padding: 4rem 1rem 2rem;
+    background-color: #f7f9fc;
+    font-family: 'Inter', sans-serif;
 }
 
 .al-title-table {
+    margin-top: 1rem; /* ajusta según necesites */
+    margin-bottom: 1.5rem;
+    text-align: center;
     color: #003366;
-    margin-left: 70px;
 }
 
+
+
+/* =========================================
+   Botones de acción de la página
+========================================= */
 .al-actions {
     display: flex;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 2rem;
+    justify-content: center;
 }
 
-.al-btn-replace {
+.al-btn-action {
+    padding: 0.6rem 1.4rem;
     border-radius: 10px;
-    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
     border: none;
-    font-weight: bold;
-    background-color: #003366;
-    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.al-btn-replace:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.al-btn-add {
+    background: #003366;
+    color: #fff;
+}
+.al-btn-add:hover {
+    background: #0055a5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 85, 165, 0.2);
+}
+
+.al-btn-send {
+    background: #28a745;
+    color: #fff;
+}
+.al-btn-send:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(33, 136, 56, 0.2);
+}
+
+.al-btn-go {
+    background: #0055a5;
+    color: #fff;
+}
+.al-btn-go:hover {
+    background: #003366;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 85, 165, 0.2);
+}
+
+/* =========================================
+   Grid de tarjetas
+========================================= */
+.al-cardboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* máximo 4 columnas */
+    gap: 16px 50px; /* fila 16px, columna 50px */
+    width: 100%;
+    max-width: 1400px;
+}
+
+
+/* =========================================
+   Tarjeta individual
+========================================= */
+.al-cardboard-card {
+  background: #fff;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+  border-left: 6px solid #2563eb; /* borde azul lateral */
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto; /* centra la tarjeta */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+al-cardboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.al-cardboard-title {
+  font-size: 1.05rem;
+  color: #003366;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.al-cardboard-section {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* =========================================
+   Botones dentro de la tarjeta
+========================================= */
+.al-cardboard-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.al-cardboard-actions button {
+    flex: 1;
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.al-btn-card-edit {
+  background: #16a34a; /* verde */
+  color: #fff;
+}
+.al-btn-card-replace {
+  background: #2563eb; /* azul */
+  color: #fff;
+}
+.al-btn-card-delete {
+  background: #dc2626; /* rojo */
+  color: #fff;
+}
+
+.al-btn-card-edit:hover { background: #15803d; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12);}
+.al-btn-card-replace:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12);}
+.al-btn-card-delete:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12);}
+
+/* =========================================
+   Mensajes y párrafos
+========================================= */
+.al-main-container p {
+    text-align: center;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* =========================================
+   Responsivo
+========================================= */
+@media (max-width: 1024px) {
+    .al-cardboard-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablet */
+    }
 }
 
 @media (max-width: 767px) {
-    .al-title-table {
-        margin: 0;
-    }
-    .al-top-table {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .al-table-container {
-        width: 352px;
-        height: 500px;
-        margin: 0;
+    .al-cardboard-grid {
+        grid-template-columns: 1fr; /* 1 columna en móvil */
+        gap: 12px;
     }
 }
-
-.al-center-message {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: 60vh;
-}
-
-.centered-title {
-    margin-left: 0 !important;
-    margin-bottom: 20px;
-}
-
-.al-alert-info {
-    background-color: #f0f6ff;
-    border: 1px solid #c2d9ff;
-    color: #003366;
-    padding: 20px 30px;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    max-width: 600px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}  

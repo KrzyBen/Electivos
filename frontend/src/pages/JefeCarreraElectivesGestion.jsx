@@ -6,7 +6,7 @@ import useReplaceElectivoAlumno from "@hooks/jefeCarrera/useReplaceElectivoAlumn
 import JcElectivoCard from "@components/JcElectivoCard";
 import PopupReplaceElectivo from "@components/PopupReplaceElectivo";
 import useElectivosCarrera from "@hooks/jefeCarrera/useElectivosCarrera";
-
+import useAprobarLista from "@hooks/jefeCarrera/useAprobarLista";
 
 import "@styles/jc-electivos.css";
 
@@ -17,8 +17,7 @@ export default function JefeCarreraElectivesGestion() {
   const [showReplace, setShowReplace] = useState(false);
   const [electivoActual, setElectivoActual] = useState(null);
   const { electivos } = useElectivosCarrera();
-
-
+  const { loading: loadingAprobar, handleAprobarLista } = useAprobarLista(fetchLista);
 
   const [alumnoSeleccionado, setAlumnoSeleccionado] = useState(null);
 
@@ -48,23 +47,37 @@ export default function JefeCarreraElectivesGestion() {
         <section className="jc-lista">
           <h3>Electivos del Alumno</h3>
 
-          {lista.map((item) => (
-            <JcElectivoCard
-              key={item.id}
-              item={item}
-              onApprove={(id) => cambiarEstado(id, "aprobado")}
-              onReject={(id) => cambiarEstado(id, "rechazado")}
-              onReplace={(item) => {
-                setElectivoActual({
-                  ...item,
-                  nombre: item.electivo.titulo
-                });
-                setShowReplace(true);
-              }}
-            />
-          ))}
+          {/* Botón aprobar lista debajo del título */}
+          {alumnoSeleccionado && (
+            <button
+              className="jc-btn-aprobar-lista"
+              disabled={loadingAprobar}
+              onClick={() => handleAprobarLista(alumnoSeleccionado)}
+            >
+              {loadingAprobar ? "Aprobando..." : "Aprobar lista alumno"}
+            </button>
+          )}
+
+          <div className="jc-lista-grid">
+            {lista.map((item) => (
+              <JcElectivoCard
+                key={item.id}
+                item={item}
+                onApprove={(id) => cambiarEstado(id, "aprobado")}
+                onReject={(id) => cambiarEstado(id, "rechazado")}
+                onReplace={(item) => {
+                  setElectivoActual({
+                    ...item,
+                    nombre: item.electivo.titulo
+                  });
+                  setShowReplace(true);
+                }}
+              />
+            ))}
+          </div>
         </section>
       )}
+
       {showReplace && electivoActual && (
         <PopupReplaceElectivo
           oldElectivo={electivoActual}

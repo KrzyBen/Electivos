@@ -9,6 +9,8 @@ import {
   getElectivosCarreraJefe
 } from "../controllers/jefeCarreraElectivos.controller.js";
 
+import { aprobarLista } from "../controllers/electivoAprobado.controller.js";
+
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { isAdmin } from "../middlewares/authorization.middleware.js";
 
@@ -29,5 +31,7 @@ router.patch("/electivo/:id/estado",authenticateJwt,isAdmin,updateEstadoElectivo
 router.post("/replace",authenticateJwt,isAdmin,replaceElectivoListaJefe);
 
 router.get("/electivos",authenticateJwt,isAdmin,getElectivosCarreraJefe);
+
+router.post("/:alumnoId/aprobar",authenticateJwt,isAdmin,aprobarLista);
 
 export default router;
