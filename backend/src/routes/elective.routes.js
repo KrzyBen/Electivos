@@ -16,18 +16,19 @@ import {
 
 const router = Router();
 
-
 router.get("/creados", authenticateJwt, isProfessor, getElectives);
-router.get("/:id/export-inscritos-pdf", authenticateJwt, isProfessor, exportInscritosPDF);
 router.get("/all/list", authenticateJwt, isJefeCarrera, getAllElectives);
+
+router.get( "/:id/export-inscritos-pdf", authenticateJwt, isProfessor, exportInscritosPDF
+);
+
 router.get("/", authenticateJwt, getElectives);
+
 router.get("/:id", getElectiveById);
+
 router.put("/edit/:id", authenticateJwt, isProfessor, updateElective);
 router.post("/", authenticateJwt, isProfessor, createElective);
-
 router.delete("/:id", authenticateJwt, isJefeCarrera, deleteElective);
 router.patch("/:id/validate", authenticateJwt, isJefeCarrera, validateElective);
-
-
 
 export default router;

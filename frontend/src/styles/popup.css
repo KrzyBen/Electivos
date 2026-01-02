@@ -1,55 +1,86 @@
-.bg{
-    position: absolute;
+/* Fondo oscuro que bloquea toda la pantalla */
+.bg {
+    position: fixed;           /* 🔴 clave */
     top: 0;
-    bottom: 0;
     left: 0;
-    right: 0;
-    background: rgba(18, 19, 18, 0.338);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(18, 19, 18, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 9999;
 }
-.popup{
-    top: 30px;
-    height: 700px;
+
+/* Contenedor del popup */
+.popup {
     width: 600px;
+    max-width: 90%;
     background: white;
     position: relative;
     border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    animation: popupFade 0.2s ease-out;
 }
-.close{
-    position: absolute;
-    margin-top: 20px;
-    margin-right: 10px;
-    right: 10px;
-    cursor: pointer;
-    background-color: white;
-    border: white;
 
+/* Animación suave */
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
-.title{
+
+/* Botón cerrar */
+.close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+}
+
+/* Título */
+.title {
     font-size: 17px;
     font-weight: 700;
+    text-align: center;
 }
+
+/* Contenido del formulario */
 .popup .form {
     padding: 35px;
-    h1 {
-        margin-bottom: 30px;
-    }
-    button {
-        margin-top: 0;
-    }
-    .container_inputs {
-        margin-bottom: 10px;
-    }
-    .tooltip-icon {
-        position: relative;
-        top: 4px;
-        margin-left: 3px;
-        cursor: pointer;
-        display: inline-block;
-    }
-    .tooltip-icon .tooltip-text {
+}
+
+/* Inputs */
+.popup .form h1 {
+    margin-bottom: 30px;
+}
+
+.popup .form button {
+    margin-top: 0;
+}
+
+.popup .form .container_inputs {
+    margin-bottom: 10px;
+}
+
+/* Tooltip */
+.tooltip-icon {
+    position: relative;
+    top: 4px;
+    margin-left: 3px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.tooltip-icon .tooltip-text {
     visibility: hidden;
     width: 150px;
     background-color: rgba(0, 0, 0, 0.75);
@@ -64,22 +95,12 @@
     left: 105%;
     opacity: 0;
     transition: opacity 0.3s;
-    }
-    .tooltip-icon .tooltip-text::after {
+}
+
+.tooltip-icon .tooltip-text::after {
     content: "";
     position: absolute;
     top: 50%;
     right: 100%;
     margin-top: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent rgba(0, 0, 0, 0.75) transparent transparent;
-    }
-    .tooltip-icon:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-    }
-    .toggle-password-icon {
-        top: 47.5%;
-    }
 }

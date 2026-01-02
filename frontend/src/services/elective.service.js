@@ -1,3 +1,4 @@
+
 import axios from "./root.service.js";
 
 const API_URL = "/electives"; 
@@ -65,10 +66,24 @@ export const validateElective = async (id) => {
   return response.data;
 };
 
-export const deleteElective = async (id) => {
+export const deleteElective = async (id, comentario = "") => {
   const response = await axios.delete(
     `${API_URL}/${id}`,
-    getAuthConfig()
+    {
+      ...getAuthConfig(),
+      params: comentario ? { comentario } : {},
+    }
+  );
+  return response.data;
+};
+
+export const downloadInscritosPDF = async (id) => {
+  const response = await axios.get(
+    `${API_URL}/${id}/export-inscritos-pdf`,
+    {
+      ...getAuthConfig(),
+      responseType: 'blob',
+    }
   );
   return response.data;
 };
