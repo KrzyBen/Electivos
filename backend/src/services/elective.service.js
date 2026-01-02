@@ -1,5 +1,6 @@
 "use strict";
 import Elective from "../entity/elective.entity.js";
+import { In } from "typeorm";
 import { AppDataSource } from "../config/configDb.js";
 import sendEmail from "../helpers/sendEmail.helper.js";
 
@@ -7,8 +8,13 @@ export async function createElectiveService(body, profesorUser) {
   try {
     const electiveRepository = AppDataSource.getRepository(Elective);
 
-    if (body.cupoMaximo > 40) {
-      return [null, "El cupo máximo permitido es 40"];
+
+
+    let carreras = [];
+    if (Array.isArray(body.carrerasEntidad) && body.carrerasEntidad.length > 0) {
+      const carreraRepository = AppDataSource.getRepository('Carrera');
+      const ids = body.carrerasEntidad.map(c => typeof c === 'object' && c !== null ? c.id : c);
+      carreras = await carreraRepository.find({ where: { id: In(ids) } });
     }
 
     const newElective = electiveRepository.create({
@@ -24,6 +30,7 @@ export async function createElectiveService(body, profesorUser) {
       requisitos: body.requisitos || null,
       profesor: profesorUser,
       validado: false,
+      carrerasEntidad: carreras,
     });
 
     const saved = await electiveRepository.save(newElective);
@@ -125,15 +132,6 @@ export async function updateElectiveService(id, updates, profesorId) {
     if (electiveFound.validado) {
       return [null, "No se puede editar un electivo ya validado"];
     }
-
-    if (updates.cupoMaximo > 40) {
-      return [null, "El cupo máximo permitido es 40"];
-    }
-
-    if (updates.cupoMaximo < electiveFound.cupoDisponible) {
-      return [null, "El cupo máximo no puede ser menor al cupo disponible"];
-    }
-
     electiveFound.titulo = updates.titulo;
     electiveFound.contenidos = updates.contenidos;
     electiveFound.cupoMaximo = updates.cupoMaximo;
@@ -147,11 +145,15 @@ export async function updateElectiveService(id, updates, profesorId) {
       electiveFound.horaFinal = updates.horaFinal;
     }
     electiveFound.requisitos = updates.requisitos || null;
+    if (Array.isArray(updates.carrerasEntidad)) {
+      const carreraRepository = AppDataSource.getRepository('Carrera');
+      const ids = updates.carrerasEntidad.map(c => typeof c === 'object' && c !== null ? c.id : c);
+      const carreras = await carreraRepository.find({ where: { id: In(ids) } });
+      electiveFound.carrerasEntidad = carreras;
+    }
     electiveFound.updatedAt = new Date();
 
-
     const saved = await electiveRepository.save(electiveFound);
-
     return [saved, null];
   } catch (error) {
     console.error("Error al actualizar electivo:", error);
@@ -181,7 +183,6 @@ export async function deleteElectiveService(id) {
   try {
     const electiveRepository = AppDataSource.getRepository(Elective);
 
-    // Buscar el electivo con la relación del profesor
     const elective = await electiveRepository.findOne({
       where: { id: Number(id) },
       relations: ["profesor"],
@@ -191,23 +192,22 @@ export async function deleteElectiveService(id) {
       return [null, "Electivo no encontrado"];
     }
 
-    // Guardar datos del profesor antes de eliminar
     const profesorEmail = elective.profesor?.email;
     const tituloElectivo = elective.titulo;
 
-    // Eliminar el electivo
+
     const result = await electiveRepository.delete({ id: Number(id) });
 
     if (result.affected === 0) {
       return [null, "Electivo no encontrado"];
     }
 
-    // Enviar correo al profesor si tiene email
     if (profesorEmail) {
+      const mensaje = `Estimado/a profesor/a,\n\nLe informamos que su electivo \"${tituloElectivo}\" no fue elegido para ser impartido este periodo.\n\nSaludos.`;
       await sendEmail({
         to: profesorEmail,
         subject: "Notificación: Electivo no será impartido",
-        text: `Estimado/a profesor/a,\n\nLe informamos que su electivo \"${tituloElectivo}\" no fue elegido para ser impartido este periodo.\n\nSaludos.`,
+        text: mensaje,
       });
     }
 

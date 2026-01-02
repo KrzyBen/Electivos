@@ -47,13 +47,18 @@ const ElectiveForm = ({ isEdit = false }) => {
     setLoading(true);
     setError(null);
 
+    function padTime(t) {
+      if (!t) return "";
+      const [h = "00", m = "00"] = t.split(":");
+      return h.padStart(2, "0") + ":" + m.padStart(2, "0");
+    }
     const formToSend = {
       titulo: form.titulo,
       contenidos: form.contenidos,
       cupoMaximo: Number(form.cupoMaximo),
       horario: form.horario,
-      horaInicio: form.horaInicio,
-      horaFinal: form.horaFinal,
+      horaInicio: padTime(form.horaInicio),
+      horaFinal: padTime(form.horaFinal),
       requisitos: form.requisitos,
     };
 

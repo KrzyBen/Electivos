@@ -2,7 +2,6 @@
 
 import PDFDocument from 'pdfkit';
 import ElectivoLista from '../entity/electivoLista.entity.js';
-import User from '../entity/user.entity.js';
 import { AppDataSource } from "../config/configDb.js";
 import {
   createElectiveService,
@@ -197,6 +196,7 @@ export async function getElectiveById(req, res) {
 }
 
 export async function deleteElective(req, res) {
+  const comentario = req.query.comentario || null;
   try {
     const { id } = req.params;
     if (!id) {
@@ -223,10 +223,14 @@ export async function deleteElective(req, res) {
 
 export async function exportInscritosPDF(req, res) {
   try {
-    const electivoId = Number(req.params.id);
 
-    const electivoListaRepository =
-      AppDataSource.getRepository(ElectivoLista);
+    const electivoId = Number(req.params.id);
+    const electivoListaRepository = AppDataSource.getRepository(ElectivoLista);
+    const electiveRepository = AppDataSource.getRepository("Elective");
+
+    // Obtener electivo para el nombre
+    const electivo = await electiveRepository.findOne({ where: { id: electivoId } });
+    const electivoTitulo = electivo?.titulo || `ID: ${electivoId}`;
 
     const inscritos = await electivoListaRepository.find({
       where: {
@@ -238,14 +242,8 @@ export async function exportInscritosPDF(req, res) {
       },
     });
 
-    if (!inscritos.length) {
-      return res
-        .status(404)
-        .json({ message: "No hay alumnos inscritos en este electivo." });
-    }
-
-    // PDF
     const doc = new PDFDocument({ margin: 40, size: "A4" });
+
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
@@ -256,26 +254,49 @@ export async function exportInscritosPDF(req, res) {
 
     doc.fontSize(18).text("Lista de Alumnos Inscritos", { align: "center" });
     doc.moveDown();
-    doc.fontSize(14).text(`Electivo ID: ${electivoId}`);
+    doc.fontSize(14).text(`Electivo: ${electivoTitulo}`);
     doc.moveDown();
 
-    // Cabecera
-    doc.fontSize(12)
-      .text("N°", 50, doc.y, { continued: true })
-      .text("Nombre", 90, doc.y, { continued: true })
-      .text("RUT", 250, doc.y, { continued: true })
-      .text("Email", 350, doc.y);
+    if (!inscritos.length) {
+      doc
+        .fontSize(12)
+        .text("No hay alumnos inscritos en este electivo.", {
+          align: "center",
+        });
+      doc.end();
+      return;
+    }
 
+
+    
+    const startX = 50;
+    const colWidths = [30, 150, 100, 220];
+    const headers = ["N°", "Nombre", "RUT", "Email"];
+    let y = doc.y;
+    headers.forEach((header, i) => {
+      doc.font("Helvetica-Bold").fontSize(12).text(header, startX + colWidths.slice(0, i).reduce((a, b) => a + b, 0), y, {
+        width: colWidths[i],
+        continued: i < headers.length - 1,
+        lineBreak: false
+      });
+    });
+    doc.font("Helvetica");
     doc.moveDown(0.5);
-    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    y = doc.y;
+    doc.moveTo(startX, y).lineTo(startX + colWidths.reduce((a, b) => a + b, 0), y).stroke();
 
     inscritos.forEach((item, index) => {
       const alumno = item.alumno;
-      doc
-        .text(`${index + 1}`, 50, doc.y, { continued: true })
-        .text(alumno?.nombreCompleto ?? "", 90, doc.y, { continued: true })
-        .text(alumno?.rut ?? "", 250, doc.y, { continued: true })
-        .text(alumno?.email ?? "", 350, doc.y);
+      let x = startX;
+      y = doc.y;
+      doc.text(`${index + 1}`, x, y, { width: colWidths[0] });
+      x += colWidths[0];
+      doc.text(alumno?.nombreCompleto ?? "", x, y, { width: colWidths[1] });
+      x += colWidths[1];
+      doc.text(alumno?.rut ?? "", x, y, { width: colWidths[2] });
+      x += colWidths[2];
+      doc.text(alumno?.email ?? "", x, y, { width: colWidths[3] });
+      doc.moveDown();
     });
 
     doc.end();

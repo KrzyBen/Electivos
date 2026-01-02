@@ -92,7 +92,7 @@ const Electives = () => {
                 <p><strong>Cupos:</strong> {electivo.cupoDisponible} / {electivo.cupoMaximo}</p>
               </div>
               <div className="card-footer">
-                {userRole === "Profesor" && (
+                {userRole === "Profesor" && !electivo.validado && (
                   <Link
                     to={`/electives/${electivo.id}/edit`}
                     className="btn edit-btn"
