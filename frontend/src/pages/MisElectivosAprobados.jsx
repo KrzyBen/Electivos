@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import useMisElectivosAprobados from "@hooks/electivoAlumno/useMisElectivosAprobados";
 import ElectivoAprobadoCard from "@components/ElectivoAprobadoCard";
+import useDownloadMisElectivosPDF from "@hooks/electivoAlumno/useDownloadMisElectivosPDF";
 import "@styles/aea-electivos.css";
 
 export default function MisElectivosAprobados() {
   const { electivos, loading } = useMisElectivosAprobados();
+  const { handleDownloadPDF } = useDownloadMisElectivosPDF();
   const navigate = useNavigate();
 
   // Definir días de la semana y preparar horario
@@ -41,7 +43,15 @@ export default function MisElectivosAprobados() {
   return (
     <div className="aea-container">
       <h2 className="aea-title">Mis Electivos Aprobados</h2>
-      <button className="aea-btn-volver" onClick={() => navigate(-1)}>Volver</button>
+      <div className="aea-actions">
+        <button className="aea-btn aea-btn-pdf" onClick={handleDownloadPDF}>
+          Descargar PDF
+        </button>
+
+        <button className="aea-btn aea-btn-volver" onClick={() => navigate(-1)}>
+          Volver
+        </button>
+      </div>
 
       <div className="aea-horario-grid">
         {dias.map((dia) => (

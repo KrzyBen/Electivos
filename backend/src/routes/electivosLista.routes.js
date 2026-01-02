@@ -14,6 +14,8 @@ import {
 
 import { getMisElectivosAprobados } from "../controllers/electivoAprobado.controller.js";
 
+import { descargarPDFListaAprobada } from "../controllers/pdfListaAprobada.controller.js";
+
 // Middlewares
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import { isAlumno } from "../middlewares/authorization.middleware.js";
@@ -34,5 +36,8 @@ router.post("/enviar", authenticateJwt, isAlumno, checkPeriodoInscripcion, envia
 
 //ruta de electivo aprobado
 router.get("/electivos-aprobados", authenticateJwt, isAlumno, getMisElectivosAprobados);
+
+// Ruta para descargar PDF de electivos aprobados
+router.get("/electivos-aprobados/pdf",authenticateJwt,isAlumno,descargarPDFListaAprobada);
 
 export default router;

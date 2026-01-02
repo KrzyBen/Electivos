@@ -25,25 +25,57 @@
 }
 
 /* =========================================
-   Botón volver
+   Acciones superiores
 ========================================= */
-.aea-btn-volver {
-    margin-bottom: 1rem;
-    background: linear-gradient(90deg, #0055a5 0%, #003366 100%);
-    color: #fff;
+.aea-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* =========================================
+   Botón base AEA (estilo sistema)
+========================================= */
+.aea-btn {
+    padding: 0.5rem 1.2rem;
     border: none;
     border-radius: 8px;
-    padding: 0.5rem 1.3rem;
-    cursor: pointer;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0,85,165,0.10);
+    cursor: pointer;
     transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.aea-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+
+/* =========================================
+   Botones
+========================================= */
+/* Botón volver */
+.aea-btn-volver {
+    background: #2563eb; /* mismo azul jc-btn-replace */
+    color: #fff;
 }
 
 .aea-btn-volver:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,85,165,0.15);
+    background: #1d4ed8;
 }
+
+/* Botón descargar PDF */
+.aea-btn-pdf {
+    background: #16a34a;
+    color: #fff;
+}
+
+.aea-btn-pdf:hover {
+    background: #15803d;
+}
+
+
 
 /* =========================================
    Grid de horario semanal
