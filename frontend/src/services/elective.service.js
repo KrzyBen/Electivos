@@ -66,13 +66,11 @@ export const validateElective = async (id) => {
   return response.data;
 };
 
-export const deleteElective = async (id, comentario = "") => {
+export const deleteElective = async (id) => {
   const response = await axios.delete(
     `${API_URL}/${id}`,
-    {
-      ...getAuthConfig(),
-      params: comentario ? { comentario } : {},
-    }
+    {},
+    getAuthConfig()
   );
   return response.data;
 };
