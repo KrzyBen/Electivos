@@ -2,6 +2,7 @@
 
 import { AppDataSource } from "../config/configDb.js";
 import ElectivoLista from "../entity/electivoLista.entity.js";
+import ElectivoAprobado from "../entity/electivoAprobado.entity.js";
 import Elective from "../entity/elective.entity.js";
 import User from "../entity/user.entity.js";
 import { hayConflictoHorario } from "../helpers/horario.helper.js";
