@@ -35,7 +35,7 @@ export default function MisElectivosAprobados() {
       <div className="aea-container">
         <h2 className="aea-title">Mis Electivos Aprobados</h2>
         <p>No tienes electivos aprobados actualmente.</p>
-        <button className="aea-btn-volver" onClick={() => navigate(-1)}>Volver</button>
+        <button className="aea-btn aea-btn-volver" onClick={() => navigate(-1)}>Volver</button>
       </div>
     );
   }
